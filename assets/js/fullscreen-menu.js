@@ -369,6 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
     returnFocus = trigger;
     positionBelowHeader();
     isOpen = true;
+    document.body.style.overflow = "hidden";
     menu.classList.add("is-open");
     menu.setAttribute("aria-hidden", "false");
     openButtons.forEach((b) => b.setAttribute("aria-expanded", "true"));
@@ -377,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const closeDropdown = (restoreFocus = true) => {
     isOpen = false;
+    document.body.style.overflow = "";
     menu.classList.remove("is-open");
     menu.setAttribute("aria-hidden", "true");
     openButtons.forEach((b) => b.setAttribute("aria-expanded", "false"));
