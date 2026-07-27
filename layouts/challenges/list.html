@@ -1,0 +1,68 @@
+{{ define "main" }}
+  {{ $pages := (where site.RegularPages "Section" "challenges").ByDate.Reverse }}
+
+  {{ $allTags := slice }}
+  {{ range $pages }}
+    {{ range .Params.tags }}
+      {{ $allTags = $allTags | append . }}
+    {{ end }}
+  {{ end }}
+  {{ $uniqueTags := $allTags | uniq | sort }}
+
+  <header class="writeup-header">
+    <p class="writeup-header__label">Archive / {{ len $pages }} entries</p>
+    <h1>{{ .Title }}</h1>
+    <div class="writeup-header__intro prose dark:prose-invert">{{ .Content }}</div>
+  </header>
+
+  <div class="writeup-browser" data-tag-browser>
+    <aside class="writeup-filters__sticky">
+      <p class="writeup-filters__title">{{ partial "icon.html" "filter" }} Filters</p>
+      <div class="writeup-filters__tabs">
+        <button data-tag-filter="all" class="is-active" aria-pressed="true">All <small data-visible-count>{{ len $pages }}</small></button>
+        {{ range $uniqueTags }}
+          <button data-tag-filter="{{ . | urlize }}">{{ . }} <small>0</small></button>
+        {{ end }}
+      </div>
+    </aside>
+
+    <section class="writeup-results" aria-live="polite" aria-label="Lab results">
+      <div class="writeup-results__bar">
+        <span><strong data-visible-count>{{ len $pages }}</strong> entries</span>
+        <span>Newest first</span>
+      </div>
+
+      <div class="writeup-list">
+        {{ range $pages }}
+          <article class="writeup-row" data-tag-item data-tags="{{ range .Params.tags }}{{ . | urlize }} {{ end }}">
+            <a class="writeup-row__link" href="{{ .RelPermalink }}" aria-label="Read {{ .Title }}"></a>
+            <div class="writeup-row__meta">
+              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
+              {{ with .Params.difficulty }}<span class="writeup-row__difficulty writeup-row__difficulty--{{ . | urlize }}">{{ . }}</span>{{ end }}
+              {{ if .Draft }}<span class="writeup-row__draft">Draft</span>{{ end }}
+            </div>
+            <h2>{{ .Title }}</h2>
+            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+            <div class="writeup-row__footer">
+              <div class="writeup-row__tags">
+                {{ range .Params.tags }}<span>{{ . }}</span>{{ end }}
+              </div>
+              <span class="writeup-row__arrow" aria-hidden="true">&rarr;</span>
+            </div>
+          </article>
+        {{ end }}
+      </div>
+
+      <div class="writeup-empty" data-filter-empty hidden>
+        {{ partial "icon.html" "search" }}
+        <strong>No matching labs.</strong>
+        <span>Try a different filter.</span>
+      </div>
+    </section>
+  </div>
+
+  {{ with resources.Get "js/tag-filter.js" }}
+    {{ $tagJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+    <script defer src="{{ $tagJS.RelPermalink }}" integrity="{{ $tagJS.Data.Integrity }}"></script>
+  {{ end }}
+{{ end }}

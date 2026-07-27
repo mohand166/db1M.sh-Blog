@@ -1,0 +1,9 @@
+{{ partial "fullscreen-menu.html" . }}
+{{ with resources.Get "js/fullscreen-menu.js" }}
+  {{ $menuJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+  <script defer src="{{ $menuJS.RelPermalink }}" integrity="{{ $menuJS.Data.Integrity }}"></script>
+{{ end }}
+{{ with resources.Get "js/search-enhance.js" }}
+  {{ $searchJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+  <script defer src="{{ $searchJS.RelPermalink }}" integrity="{{ $searchJS.Data.Integrity }}"></script>
+{{ end }}

@@ -1,0 +1,29 @@
+{{ define "main" }}
+<div class="term-404">
+  <div class="term-404__terminal">
+    <div class="term-404__bar">
+      <div class="term-404__lights"><i></i><i></i><i></i></div>
+      <span>session</span>
+    </div>
+    <div class="term-404__body">
+      <p><span class="term-404__prompt">$</span> cd {{ .RelPermalink }}</p>
+      <p class="term-404__error">bash: cd: {{ .RelPermalink }}: No such file or directory</p>
+      <p><span class="term-404__prompt">$</span> <span class="term-404__cursor">_</span></p>
+    </div>
+    <div class="term-404__footer">
+      <span>exit code: 404</span>
+      <span>COMMAND NOT FOUND</span>
+    </div>
+  </div>
+
+  <div class="term-404__help">
+    <p class="term-404__label">AVAILABLE ENDPOINTS</p>
+    <nav class="term-404__links">
+      <a href="{{ "/" | relLangURL }}">~</a>
+      <a href="{{ "/posts/" | relLangURL }}">Write-ups</a>
+      <a href="{{ "/my-labs/" | relLangURL }}">My Labs</a>
+      <a href="{{ "/about/" | relLangURL }}">About</a>
+    </nav>
+  </div>
+</div>
+{{ end }}

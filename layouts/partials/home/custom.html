@@ -1,0 +1,140 @@
+  {{ $pages := slice }}
+  {{ range where site.RegularPages "Section" "posts" }}
+    {{ $pages = $pages | append . }}
+  {{ end }}
+  {{ range where site.RegularPages "Section" "challenges" }}
+    {{ $pages = $pages | append . }}
+  {{ end }}
+  {{ $pages = $pages.ByDate.Reverse }}
+
+  {{ $allTags := slice }}
+  {{ range $pages }}
+    {{ range .Params.tags }}
+      {{ $allTags = $allTags | append . }}
+    {{ end }}
+  {{ end }}
+  {{ $uniqueTags := $allTags | uniq | sort }}
+<div class="field-home">
+  <section class="field-hero" aria-labelledby="field-title">
+    <div class="field-hero__copy">
+      <p class="hero-name-typewriter" aria-label="Mohanad Edrees aka db1M">
+        <span data-hero-name aria-hidden="true">Mohanad Edrees aka db1M</span><span class="hero-name-cursor" aria-hidden="true">_</span>
+      </p>
+      <h1 id="field-title">Exploring.<br><em>Exploiting.</em><br>Reporting.</h1>
+      <a class="hero-about-link" href="{{ "about/" | relLangURL }}">More about me <span aria-hidden="true">&rarr;</span></a>
+
+      <div class="field-actions">
+        <a class="field-button field-button--primary" href="{{ "posts/" | relLangURL }}">
+          {{ partial "icon.html" "file-lines" }}
+          Browse write-ups
+        </a>
+      </div>
+    </div>
+
+    <div class="field-terminal" aria-label="db1M.sh field console">
+      <div class="field-terminal__bar">
+        <div class="field-terminal__lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span>field-console</span>
+        <span>01</span>
+      </div>
+      <div class="field-terminal__body" data-field-terminal aria-label="Terminal session: whoami returns db1M; focus is Web Pentest, Vulnerability Research, Secure Code Review, and AI Security; live status is exploring the unknown.">
+        <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="whoami">whoami</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p class="field-output" data-terminal-line data-terminal-output><span data-terminal-text="db1M">db1M</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="cat focus.txt">cat focus.txt</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p class="field-output" data-terminal-line data-terminal-output><span data-terminal-text="Web Pentest / Vulnerability Research / Secure Code Review / AI Security">Web Pentest / Vulnerability Research / Secure Code Review / AI Security</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="./status --live">./status --live</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p class="field-output" data-terminal-line data-terminal-output><span class="field-live"></span><span data-terminal-text="exploring the unknown">exploring the unknown</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+      </div>
+      <div class="field-terminal__footer">
+        <span>{{ add (len (where site.RegularPages "Section" "posts")) (len (where site.RegularPages "Section" "challenges")) }} entries indexed</span>
+        <span>UTC{{ now.Format "-07:00" }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="write-ups" class="field-section home-archive" aria-labelledby="write-ups-title" data-tag-browser>
+    <div class="field-section__heading home-archive__heading">
+      <div>
+        <p class="field-command">$ ls ./write-ups</p>
+        <h2 id="write-ups-title" style="font-size: 1.5rem;">Latest</h2>
+      </div>
+      <a href="{{ "posts/" | relLangURL }}">Open archive <span aria-hidden="true">&rarr;</span></a>
+    </div>
+
+    {{ if $uniqueTags }}
+      <div class="home-tag-filter">
+        <span class="home-tag-filter__label">{{ partial "icon.html" "filter" }} Filter by tag</span>
+        <div class="home-tag-filter__tabs">
+          <button data-tag-filter="all" class="is-active" aria-pressed="true">All <small data-visible-count>{{ len $pages }}</small></button>
+          {{ range $uniqueTags }}
+            <button data-tag-filter="{{ . | urlize }}">{{ . }} <small>0</small></button>
+          {{ end }}
+        </div>
+      </div>
+    {{ end }}
+
+    {{ if $pages }}
+      <div class="home-post-grid">
+        {{ range $index, $page := $pages }}
+          {{ $featured := "" }}
+          {{ $images := $page.Resources.ByType "image" }}
+          {{ range slice "*feature*" "*cover*" "*thumbnail*" }}
+            {{ if not $featured }}{{ $featured = $images.GetMatch . }}{{ end }}
+          {{ end }}
+          <article class="home-post-card" data-tag-item data-tags="{{ range $page.Params.tags }}{{ . | urlize }} {{ end }}">
+            <a class="home-post-card__link" href="{{ $page.RelPermalink }}" aria-label="Read {{ $page.Title }}"></a>
+            {{ if $featured }}
+              {{ $thumbnail := $featured.Fill "900x480 Center q85" }}
+              <div class="home-post-card__visual">
+                <img src="{{ $thumbnail.RelPermalink }}" alt="" loading="lazy" decoding="async">
+              </div>
+            {{ else }}
+              <div class="home-post-card__visual home-post-card__visual--fallback" aria-hidden="true">
+                <span>{{ partial "icon.html" "code" }}</span>
+                <small>FIELD NOTE / {{ printf "%02d" (add $index 1) }}</small>
+              </div>
+            {{ end }}
+            <div class="home-post-card__body">
+              <div class="home-post-card__meta">
+                <time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date.Format "02 / 01 / 06" }}</time>
+                {{ with $page.Params.difficulty }}<span class="home-post-card__difficulty home-post-card__difficulty--{{ . | urlize }}">{{ . }}</span>{{ end }}
+                {{ if $page.Draft }}<span>Draft</span>{{ end }}
+              </div>
+              <h3>{{ $page.Title }}</h3>
+              {{ with $page.Description }}<p>{{ . }}</p>{{ end }}
+              <div class="home-post-card__tags">
+                {{ with $page.Params.tags }}{{ range first 4 . }}<span>{{ . }}</span>{{ end }}{{ end }}
+              </div>
+            </div>
+          </article>
+        {{ end }}
+      </div>
+
+      <p class="home-archive__count"><strong data-visible-count>{{ len $pages }}</strong> write-ups shown</p>
+
+      <div class="writeup-empty" data-filter-empty hidden>
+        {{ partial "icon.html" "search" }}
+        <strong>No matching write-ups.</strong>
+        <span>Try a different filter.</span>
+      </div>
+    {{ else }}
+      <div class="writeup-empty">
+        {{ partial "icon.html" "file-lines" }}
+        <strong>No published write-ups yet.</strong>
+      </div>
+    {{ end }}
+  </section>
+
+  {{ with resources.Get "js/terminal.js" }}
+    {{ $terminalJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+    <script defer src="{{ $terminalJS.RelPermalink }}" integrity="{{ $terminalJS.Data.Integrity }}"></script>
+  {{ end }}
+  {{ with resources.Get "js/hero-name.js" }}
+    {{ $heroNameJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+    <script defer src="{{ $heroNameJS.RelPermalink }}" integrity="{{ $heroNameJS.Data.Integrity }}"></script>
+  {{ end }}
+  {{ with resources.Get "js/tag-filter.js" }}
+    {{ $tagJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+    <script defer src="{{ $tagJS.RelPermalink }}" integrity="{{ $tagJS.Data.Integrity }}"></script>
+  {{ end }}
+</div>

@@ -1,0 +1,20 @@
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" | default "Write-up screenshot" -}}
+{{- $caption := .Get "caption" -}}
+{{- $staticPath := printf "static/%s" $src -}}
+
+{{- if fileExists $staticPath -}}
+  <figure class="writeup-screenshot">
+    <img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="lazy" decoding="async">
+    {{- with $caption }}<figcaption>{{ . }}</figcaption>{{ end -}}
+  </figure>
+{{- else -}}
+  <aside class="writeup-screenshot writeup-screenshot--missing" role="note">
+    <span class="writeup-screenshot__icon">{{ partial "icon.html" "image" }}</span>
+    <span>
+      <strong>Screenshot pending</strong>
+      {{- with $caption }}<small>{{ . }}</small>{{ end -}}
+      <code>{{ $src }}</code>
+    </span>
+  </aside>
+{{- end -}}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html
+  lang="{{ with site.Params.isoCode | default (site.Language.Locale | default `en`) }}{{- . -}}{{ end }}"
+  dir="{{ cond (site.Params.rtl | default false) `rtl` `ltr` }}"
+  class="scroll-smooth"
+  data-default-appearance="{{ site.Params.defaultAppearance | default `light` }}"
+  data-auto-appearance="{{ site.Params.autoSwitchAppearance | default `true` }}">
+  {{- partial "head.html" . -}}
+  {{- partialCached "init.html" . -}}
+
+  {{ $bodyLayout := "flex flex-col h-screen m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32" }}
+  {{ $bodyColor := "text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral" }}
+  <body class="{{ $bodyLayout }} {{ $bodyColor }} {{ if site.Params.enableStyledScrollbar | default true }}bf-scrollbar{{ end }}">
+    <div class="terminal-bg" aria-hidden="true">
+      <canvas id="matrix-rain"></canvas>
+      <div class="terminal-bg__scanlines"></div>
+      <div class="terminal-bg__overlay"></div>
+    </div>
+    <script>
+(function(){
+  var canvas = document.getElementById('matrix-rain');
+  var ctx = canvas.getContext('2d');
+  var CHARS = '01{}[]<>/\\$#;:=+_';
+  var SIZE = 14;
+  var DARK = '#1d6e56';
+  var BRIGHT = '#8ef7d1';
+  var columns, drops;
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = Math.floor(canvas.width / SIZE);
+    drops = [];
+    for (var i = 0; i < columns; i++) {
+      drops[i] = Math.floor(Math.random() * (canvas.height / SIZE));
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  if (prefersReduced) {
+    ctx.fillStyle = '#070d12';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  function draw() {
+    ctx.fillStyle = 'rgba(7,13,18,0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = SIZE + 'px "JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace';
+    for (var i = 0; i < columns; i++) {
+      var char = CHARS[Math.floor(Math.random() * CHARS.length)];
+      var bright = Math.random() < 0.15;
+      ctx.fillStyle = bright ? BRIGHT : DARK;
+      ctx.fillText(char, i * SIZE, drops[i] * SIZE);
+      if (drops[i] * SIZE > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i] += 1;
+    }
+  }
+  setInterval(draw, 60);
+})();
+    </script>
+    <div id="the-top" class="absolute flex self-center">
+      <a
+        class="px-3 py-1 text-sm -translate-y-8 rounded-b-lg bg-primary-200 focus:translate-y-0 dark:bg-neutral-600"
+        href="#main-content">
+        <span class="font-bold text-primary-600 pe-2 dark:text-primary-400">&darr;</span>
+        {{ i18n "nav.skip_to_main" }}
+      </a>
+    </div>
+    {{ $header := print "header/" site.Params.header.layout ".html" }}
+    {{ if templates.Exists ( printf "partials/%s" $header ) }}
+      {{ partial $header . }}
+    {{ else }}
+      {{ partial "header/basic.html" . }}
+    {{ end }}
+    <div class="relative flex flex-col grow">
+      <main id="main-content" class="grow">
+        {{ block "main" . }}{{ end }}
+        {{ if and (site.Params.footer.showScrollToTop | default true) }}
+          {{- partial "scroll-to-top.html" . -}}
+        {{ end }}
+      </main>
+      {{- partial "footer.html" . -}}
+      {{ if site.Params.enableSearch | default false }}
+        {{- partial "search.html" . -}}
+      {{ end }}
+    </div>
+  </body>
+  {{ if site.Params.buymeacoffee.globalWidget | default false }}
+    <script
+      data-name="BMC-Widget"
+      data-cfasync="false"
+      src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+      data-id="{{ site.Params.buymeacoffee.identifier }}"
+      data-description="Support me on Buy me a coffee!"
+      {{ with site.Params.buymeacoffee.globalWidgetMessage }}data-message="{{ . }}"{{ end }}
+      {{ with site.Params.buymeacoffee.globalWidgetColor | default `#FFDD00` }}data-color="{{ . }}"{{ end }}
+      {{ with site.Params.buymeacoffee.globalWidgetPosition }}data-position="{{ . }}"{{ end }}
+      data-x_margin="18"
+      data-y_margin="18"></script>
+  {{ end }}
+</html>

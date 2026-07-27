@@ -1,0 +1,20 @@
+<nav class="flex items-center gap-x-5 h-12" aria-label="Header utilities">
+  {{ partial "header/components/translations.html" . }}
+
+  {{ if .Site.Params.enableSearch | default false }}
+    <button id="search-button" aria-label="Search" class="text-base bf-icon-color-hover" title="{{ i18n "search.open_button_title" }}">
+      {{ partial "icon.html" "search" }}
+    </button>
+  {{ end }}
+
+  {{ if .Site.Params.footer.showAppearanceSwitcher | default false }}
+    <button id="appearance-switcher" aria-label="{{ i18n "footer.dark_appearance" }}" type="button" class="text-base bf-icon-color-hover" title="{{ i18n "footer.dark_appearance" }}">
+      <span class="flex items-center justify-center dark:hidden">{{ partial "icon.html" "moon" }}</span>
+      <span class="items-center justify-center hidden dark:flex">{{ partial "icon.html" "sun" }}</span>
+    </button>
+  {{ end }}
+
+  <button type="button" class="fullscreen-nav-trigger bf-icon-color-hover" data-fullscreen-menu-open aria-label="Open navigation menu" aria-controls="fullscreen-navigation" aria-expanded="false">
+    {{ partial "icon.html" "bars" }}
+  </button>
+</nav>

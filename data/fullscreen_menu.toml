@@ -1,0 +1,15 @@
+[[items]]
+  label = "Write-ups"
+  url = "/posts/"
+
+[[items]]
+  label = "My Labs"
+  url = "/my-labs/"
+
+[[items]]
+  label = "About"
+  url = "/about/"
+
+[[items]]
+  label = "Search"
+  action = "search"
