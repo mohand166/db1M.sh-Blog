@@ -2249,3 +2249,37 @@ html:not(.dark) .chroma {
     display: none;
   }
 }
+
+.about-connect {
+  display: inline-block;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #7fb8ac;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.about-social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 0.5rem;
+}
+
+.about-social-icons a {
+  display: inline-flex;
+  color: #7fb8ac;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.about-social-icons a:hover {
+  color: #8ef7d1;
+}
+
+.about-social-icons svg {
+  width: 28px;
+  height: 28px;
+}
