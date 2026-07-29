@@ -108,7 +108,7 @@ fragment TypeRef on __Type {
 
 After visualizing it in https://apis.guru/graphql-voyager/ it looks like:
 
-![GraphQL schema visualization](feature.png)
+<img width="1341" height="853" alt="image" src="https://github.com/user-attachments/assets/88a3ff0f-4270-4345-a5ea-3f5925771f41" />
 
 I noticed `activeApikeys` and wanted to retrieve the data on it so just typed:
 
