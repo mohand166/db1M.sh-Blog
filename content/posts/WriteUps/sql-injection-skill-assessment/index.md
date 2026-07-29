@@ -1,5 +1,5 @@
 +++
-title = 'SQL Injection Skill Assessment'
+title = 'SQL Injection Skill Assessment | CWES Path on HTB'
 date = '2026-01-11T01:53:01-04:00'
 draft = false
 slug = 'sql-injection-skill-assessment'

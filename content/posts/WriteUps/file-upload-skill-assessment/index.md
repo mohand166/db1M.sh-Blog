@@ -1,5 +1,5 @@
 +++
-title = 'File Upload Skill Assessment'
+title = 'File Upload Skill Assessment | CWES Path on HTB'
 date = '2026-01-15T08:36:42-04:00'
 draft = false
 slug = 'file-upload-skill-assessment'

@@ -1,5 +1,5 @@
 +++
-title = 'Information Gathering Skill Assessment'
+title = 'Information Gathering Skill Assessment | CWES Path on HTB'
 date = '2026-01-05T08:36:42-04:00'
 draft = false
 slug = 'information-gathering-skill-assessment'

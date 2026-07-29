@@ -1,5 +1,5 @@
 +++
-title = 'GraphQL Skill Assessment'
+title = 'Attacking GraphQl Skill Assessment | CWES on HTB'
 date = '2026-06-21T03:16:15-04:00'
 draft = false
 slug = 'graphql-skill-assessment'
