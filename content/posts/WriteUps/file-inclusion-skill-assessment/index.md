@@ -16,7 +16,7 @@ The web application has some endpoints:
 - `contact.php`
 - `apply.php`
 Our interesting endpoint is `apply.php` as mentioned in the description.
-![[Pasted image 20260702215813.png]]
+<img width="955" height="800" alt="image" src="https://github.com/user-attachments/assets/8d50f189-d476-4648-8818-aa286b93b802" />
 
 As a start, I decided to upload a file to test the upload functionality to know which files can be uploaded to decide which approach I will go through.
 
@@ -24,7 +24,7 @@ As a start, I decided to upload a file to test the upload functionality to know 
 - So I uploaded a `shell.php` file that contains a PHP shell.
 - After submitting, the app redirected us to endpoint `thanks.php?n=`, testing it with LFI but it's not vulnerable.
 - While exploring the code to know the path of the uploaded file to make me know how to access it later, I FOUND something interesting:
-![[Pasted image 20260702222030.png]]
+<img width="870" height="98" alt="image" src="https://github.com/user-attachments/assets/171b758e-b9aa-4ba1-97e4-b29f520f24f6" />
 - There is another endpoint called `api/image.php` and the logo of the application is called and hashed with the parameter `p`.
 - I tried to test this parameter to LFI vulnerability with basic payloads, but no one triggered it, so let's do fuzzing:
 ```bash
@@ -35,7 +35,7 @@ As a start, I decided to upload a file to test the upload functionality to know 
 ```url
 GET /api/image.php?p=....//....//....//....//etc/passwd
 ```
-![[Pasted image 20260702223405.png]]
+<img width="1920" height="937" alt="image" src="https://github.com/user-attachments/assets/e4beaeea-ea6c-4f95-b8bf-4ccc39c01234" />
 - Now I want to get the source code, we have two options, to get the source code:
 	- **Using Wrappers:**
 ```url
@@ -145,7 +145,8 @@ NOTE THAT: as I mentioned before, no need to write `.php` to the end of our file
 %2E%2E%2Fuploads%2Ffc023fcacb27a7ad72d605c4e300b389
 ```
  - Now everything is ready, we should send a request to `region` parameter in `contact.php`.
- ![[Pasted image 20260703000740.png]]
+   <img width="1920" height="937" alt="image" src="https://github.com/user-attachments/assets/23748f30-0096-4330-adb1-9b76088c048e" />
+
  - Tells us `'region' parameter contains invalid character(s)`, meaning that we don't bypass the filters.
  - I tried `Double Encoding`:
  ANND DOONE, we gain RCE now, I listed the all files in `/` using `cmd=ls -al /` to demonstrate the flag location:
@@ -153,6 +154,7 @@ NOTE THAT: as I mentioned before, no need to write `.php` to the end of our file
  %25%32%65%25%32%65%25%32%66%25%37%35%25%37%30%25%36%63%25%36%66%25%36%31%25%36%34%25%37%33%25%32%66%25%36%36%25%36%33%25%33%30%25%33%32%25%33%33%25%36%36%25%36%33%25%36%31%25%36%33%25%36%32%25%33%32%25%33%37%25%36%31%25%33%37%25%36%31%25%36%34%25%33%37%25%33%32%25%36%34%25%33%36%25%33%30%25%33%35%25%36%33%25%33%34%25%36%35%25%33%33%25%33%30%25%33%30%25%36%32%25%33%33%25%33%38%25%33%39&cmd=ls+-al+/
  ```
  
-![[Pasted image 20260703001307.png]]
+<img width="1920" height="937" alt="image" src="https://github.com/user-attachments/assets/4f897c2a-b67e-4c57-8af9-8c97835026e8" />
+
 The flag in `flag_09ebca.txt`, just read it using `cat /flag_09ebca.txt` and done ;)
 
