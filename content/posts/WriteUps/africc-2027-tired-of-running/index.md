@@ -1,7 +1,7 @@
 +++
 title = "Tired of Running | AFRICC 2027 Qualifiers CTF"
 date = "2026-08-09"
-tags = ["CTF", "Web", "CRLF", "Smuggling"]
+tags = ["CTF", "Web", "CRLF", "Smuggling", "SQLi"]
 description = "Full chain walkthrough: uint16 length overflow to smuggle osquery SQL fields, login bypass, a YARA oracle for byte-by-byte credential exfiltration, and CRLF request smuggling to POST the credential to an internal flag server."
 difficulty = 'hard'
 draft = true
