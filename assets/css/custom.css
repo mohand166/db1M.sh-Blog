@@ -189,6 +189,57 @@ html:not(.dark) .chroma {
   color: #8ef7d1;
 }
 
+.single-writeup-cover {
+  box-sizing: border-box;
+  width: min(62rem, calc(100vw - 3rem));
+  max-width: 100%;
+  margin: 1.35rem 0 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(95, 211, 196, 0.18);
+  border-radius: 0.75rem;
+  background: rgba(7, 13, 18, 0.5);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.22);
+}
+
+.single-writeup-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 34rem;
+  object-fit: cover;
+}
+
+.single-writeup-description {
+  width: min(62rem, calc(100vw - 3rem));
+  max-width: 100%;
+  margin: 0 0 1rem;
+  color: #7fb8ac;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.dark .single-writeup-description {
+  color: #9bd3c8;
+}
+
+@media (max-width: 640px) {
+  #single_header {
+    width: calc(100vw - 3rem);
+    max-width: calc(100vw - 3rem);
+  }
+
+  #single_header > h1,
+  .single-writeup-cover,
+  .single-writeup-description {
+    width: calc(100vw - 3rem);
+    max-width: calc(100vw - 3rem);
+  }
+
+  #single_header > h1 {
+    overflow-wrap: anywhere;
+  }
+}
+
 .article-link--card {
   transition: border-color 160ms ease, transform 160ms ease;
 }

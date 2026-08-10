@@ -19,6 +19,22 @@
       <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         {{ .Title | emojify }}
       </h1>
+      {{ if eq .Section "posts" }}
+        {{ $featured := "" }}
+        {{ $images := .Resources.ByType "image" }}
+        {{ range slice "*feature*" "*cover*" "*thumbnail*" }}
+          {{ if not $featured }}{{ $featured = $images.GetMatch . }}{{ end }}
+        {{ end }}
+        {{ if $featured }}
+          {{ $cover := $featured.Fit "1400x900 Center q90" }}
+          <figure class="single-writeup-cover" style="width: min(62rem, calc(100vw - 3rem)); max-width: 100%; box-sizing: border-box;">
+            <img src="{{ $cover.RelPermalink }}" alt="{{ .Title | plainify }}" loading="eager" decoding="async" style="width: 100%; max-width: 100%; height: auto;">
+          </figure>
+        {{ end }}
+        {{ with .Description }}
+          <p class="single-writeup-description">{{ . | emojify }}</p>
+        {{ end }}
+      {{ end }}
       <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
         {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
       </div>
