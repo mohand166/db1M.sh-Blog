@@ -541,5 +541,6 @@ Our Flag is: `africc{wh4t_4_gr34t_marathon}`
 
 # Resources
 - [osquery documentation](https://osquery.readthedocs.io/en/latest/)
+- https://www.youtube.com/watch?v=Tfg1B8u1yvE&t=4s&pp=ygUYc3FsIGluamVjdGlvbiBpc24ndCBkZWFk
 
 Happy Hacking :)
