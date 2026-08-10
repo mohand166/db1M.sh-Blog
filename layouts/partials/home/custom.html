@@ -97,7 +97,6 @@
             <div class="home-post-card__body">
               <div class="home-post-card__meta">
                 <time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date.Format "02 / 01 / 06" }}</time>
-                {{ with $page.Params.difficulty }}<span class="home-post-card__difficulty home-post-card__difficulty--{{ . | urlize }}">{{ . }}</span>{{ end }}
                 {{ if $page.Draft }}<span>Draft</span>{{ end }}
               </div>
               <h3>{{ $page.Title }}</h3>

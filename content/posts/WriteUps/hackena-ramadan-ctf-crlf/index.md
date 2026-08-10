@@ -1,9 +1,8 @@
 +++
 title = "No Notes CRLF Challenge | Hackena Ramadan CTF"
 date = "2026-03-14"
-tags = ["CTF", "Web"]
+tags = ["CTF", "Web", "Hard"]
 description = "Exploiting HTTP response splitting to steal cookies from an isolated bot using timing side-channel attacks."
-difficulty = 'hard'
 +++
 
 > How I exploited HTTP response splitting to steal cookies from an isolated bot using only time measurements.

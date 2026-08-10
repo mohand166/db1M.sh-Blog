@@ -4,8 +4,7 @@ date = '2026-01-07T08:36:42-04:00'
 draft = false
 slug = 'web-fuzzing-skill-assessment'
 description = 'Directory fuzzing with ffuf to discover hidden files, admin panels, and restricted endpoints leading to the flag.'
-tags = ["Web", "HTB"]
-difficulty = 'hard'
+tags = ["Web", "HTB", "Hard"]
 +++
 
 ![](https://miro.medium.com/v2/resize:fit:657/0*Oy--u9pZ4coqoEpL.png)

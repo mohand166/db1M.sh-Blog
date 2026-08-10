@@ -1,10 +1,9 @@
 +++
 title = "Tired of Running | AFRICC 2027 Qualifiers CTF"
 date = "2026-08-09"
-tags = ["CTF", "Web", "CRLF", "Smuggling", "SQLi"]
+tags = ["CTF", "Web", "CRLF", "Smuggling", "SQLi", "Hard"]
 description = "Full chain walkthrough: uint16 length overflow to smuggle osquery SQL fields, login bypass, a YARA oracle for byte-by-byte credential exfiltration, and CRLF request smuggling to POST the credential to an internal flag server."
-difficulty = 'hard'
-draft = true
+draft = false
 +++
 
 > How a uint16 integer overflow let me smuggle SQL fields into osquery, exfiltrate a 64-byte credential through a YARA oracle, and reach an internal flag server with a CRLF-smuggled POST.

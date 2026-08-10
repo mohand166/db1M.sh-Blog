@@ -4,8 +4,7 @@ date = '2026-06-15T08:36:42-04:00'
 draft = false
 slug = 'file-inclusion-skill-assessment'
 description = 'Chaining LFI path traversal, source code disclosure, and double URL encoding to gain RCE through an uploaded PHP shell.'
-tags = ["Web", "HTB"]
-difficulty = 'hard'
+tags = ["Web", "HTB", "Hard"]
 +++
 **The challenge description:** Assess the web application and use a variety of techniques to gain remote code execution and find a flag in the / root directory of the file system. Submit the contents of the flag as your answer.
 

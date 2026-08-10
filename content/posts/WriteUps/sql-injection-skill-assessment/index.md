@@ -4,8 +4,7 @@ date = '2026-01-11T01:53:01-04:00'
 draft = false
 slug = 'sql-injection-skill-assessment'
 description = 'Chaining SQL injection bypass, UNION-based enumeration, and INTO OUTFILE to gain RCE on a web application.'
-tags = ["Web", "HTB", "SQLi"]
-difficulty = 'medium'
+tags = ["Web", "HTB", "SQLi", "Medium"]
 +++
 
 We are tasked with a web application and assigned to perform a penetration test and exploit SQL injection vulnerability. Let's goo and explore.

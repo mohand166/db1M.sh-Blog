@@ -4,8 +4,7 @@ date = '2026-06-21T03:16:15-04:00'
 draft = false
 slug = 'graphql-skill-assessment'
 description = 'Exploiting GraphQL introspection to leak API keys, then chaining SQL injection through customer queries to dump the flag.'
-tags = ["Web", "HTB"]
-difficulty = 'easy'
+tags = ["Web", "HTB", "Easy"]
 +++
 
 First explored the request and decided to see if the GraphiQL endpoint is enabled.

@@ -1,9 +1,8 @@
 +++
 title = "Czechoslovakia XSS Challenge | Hackena Ramadan CTF"
 date = "2026-03-14"
-tags = ["CTF", "Web", "XSS"]
+tags = ["CTF", "Web", "XSS", "Medium"]
 description = "Exploiting XSS in a filtered input parameter using the /a// bypass technique to steal the admin bot's FLAG cookie through webhook exfiltration."
-difficulty = 'medium'
 +++
 
 > How I Exploited an **XSS** vulnerability in a filtered input parameter using the `/a//` bypass technique to steal the admin bot's FLAG cookie through a webhook exfiltration.

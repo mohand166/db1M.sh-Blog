@@ -4,8 +4,7 @@ date = '2026-01-05T08:36:42-04:00'
 draft = false
 slug = 'information-gathering-skill-assessment'
 description = 'Reconnaissance methodology covering DNS enumeration, WHOIS lookups, subdomain discovery, and web footprinting to map an attack surface.'
-tags = ["Web", "HTB"]
-difficulty = 'hard'
+tags = ["Web", "HTB", "Hard"]
 +++
 
 ![](https://miro.medium.com/v2/resize:fit:792/1*x9V5H3RDvJxIkp1AnOEy3w.jpeg)

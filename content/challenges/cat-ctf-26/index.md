@@ -1,9 +1,8 @@
 +++
 title = "CAT CTF 26 — Entry Level (Author Write-Ups)"
 date = "2026-03-23"
-tags = ["CTF", "Web", "Author"]
+tags = ["CTF", "Web", "Easy"]
 description = "Write-ups for 3 web challenges I created at CAT CTF 26: Admin Jokes, Forest Secrets, and Paper Tail."
-difficulty = "easy"
 +++
 Hello everyone, this is my first time being an author for a CTF competition. I created 6 web challenges, one misc challenge, and one Linux jail. It was a very exciting experience for me to have this opportunity.
 

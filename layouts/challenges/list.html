@@ -38,7 +38,6 @@
             <a class="writeup-row__link" href="{{ .RelPermalink }}" aria-label="Read {{ .Title }}"></a>
             <div class="writeup-row__meta">
               <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
-              {{ with .Params.difficulty }}<span class="writeup-row__difficulty writeup-row__difficulty--{{ . | urlize }}">{{ . }}</span>{{ end }}
               {{ if .Draft }}<span class="writeup-row__draft">Draft</span>{{ end }}
             </div>
             <h2>{{ .Title }}</h2>

@@ -4,8 +4,7 @@ date = '2026-01-15T08:36:42-04:00'
 draft = false
 slug = 'file-upload-skill-assessment'
 description = 'Chaining unrestricted file upload, path traversal, and double URL decoding to gain remote code execution.'
-tags = ["Web", "HTB"]
-difficulty = 'medium'
+tags = ["Web", "HTB", "Medium"]
 +++
 - Inspecting the webapp and the functionalities found a submit flag functionality.
 - I read the JS and the HTML codes to see the validation of the frontend, noticed that only images extensions are allowed. 

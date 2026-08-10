@@ -4,8 +4,7 @@ date = '2026-07-05T08:36:42-04:00'
 draft = false
 slug = 'api-attacks-skill-assessment'
 description = 'Escalating from customer to supplier via role enumeration, security-question brute-force, and JWT re-authentication to achieve RCE.'
-tags = ["Web", "HTB"]
-difficulty = 'hard'
+tags = ["Web", "HTB", "Hard"]
 +++
 We have a web application that should be secured than `v0` and `v1`, and the question said that `Submit the contents of the flag at '/flag.txt'.`
 After seeing that the flag is in `/flag.txt`, I thought about searching for SSRF to LFI. This enable me to know the local files paths and get the flag.
