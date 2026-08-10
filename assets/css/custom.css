@@ -2303,13 +2303,12 @@ html.boot-sequence-skip .boot-sequence,
   white-space: nowrap;
 }
 
-.boot-sequence__line--first,
-.boot-sequence__line--first .boot-sequence__prefix {
-  color: #c9f5ea;
-}
-
 .boot-sequence__prefix {
   color: #5fd3c4;
+}
+
+.boot-sequence__line--first .boot-sequence__text {
+  color: #00ff66;
 }
 
 .boot-sequence__cursor {
