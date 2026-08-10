@@ -1,3 +1,18 @@
+  <script>
+(function(){
+  try {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.documentElement.classList.add(reduced ? "boot-sequence-skip" : "boot-sequence-pending");
+  } catch (error) {
+    document.documentElement.classList.add("boot-sequence-pending");
+  }
+})();
+  </script>
+  <div id="boot-sequence" class="boot-sequence" aria-hidden="true">
+    <canvas class="boot-sequence__matrix"></canvas>
+    <div class="boot-sequence__terminal" data-boot-terminal></div>
+  </div>
+
   {{ $pages := slice }}
   {{ range where site.RegularPages "Section" "posts" }}
     {{ $pages = $pages | append . }}
@@ -135,5 +150,9 @@
   {{ with resources.Get "js/tag-filter.js" }}
     {{ $tagJS := . | resources.Minify | resources.Fingerprint "sha512" }}
     <script defer src="{{ $tagJS.RelPermalink }}" integrity="{{ $tagJS.Data.Integrity }}"></script>
+  {{ end }}
+  {{ with resources.Get "js/boot-sequence.js" }}
+    {{ $bootJS := . | resources.Minify | resources.Fingerprint "sha512" }}
+    <script defer src="{{ $bootJS.RelPermalink }}" integrity="{{ $bootJS.Data.Integrity }}"></script>
   {{ end }}
 </div>

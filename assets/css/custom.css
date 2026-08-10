@@ -2249,3 +2249,87 @@ html:not(.dark) .chroma {
   width: 28px;
   height: 28px;
 }
+
+html.boot-sequence-pending,
+html.boot-sequence-pending body {
+  overflow: hidden;
+}
+
+.boot-sequence {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: #070d12;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 400ms ease;
+}
+
+html.boot-sequence-skip .boot-sequence,
+.boot-sequence[hidden] {
+  display: none;
+}
+
+.boot-sequence.is-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-sequence__matrix {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.boot-sequence__terminal {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, calc(100vw - 2rem));
+  color: #c9f5ea;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(0.95rem, 2.4vw, 1.12rem);
+  line-height: 1.85;
+  text-shadow: 0 0 0.7rem rgba(95, 211, 196, 0.16);
+}
+
+.boot-sequence__line {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.boot-sequence__line--first,
+.boot-sequence__line--first .boot-sequence__prefix {
+  color: #c9f5ea;
+}
+
+.boot-sequence__prefix {
+  color: #5fd3c4;
+}
+
+.boot-sequence__cursor {
+  display: inline-block;
+  color: #8ef7d1;
+  animation: boot-cursor-blink 850ms steps(2, start) infinite;
+}
+
+@keyframes boot-cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-sequence {
+    display: none;
+  }
+
+  .boot-sequence__cursor {
+    animation: none;
+  }
+}
