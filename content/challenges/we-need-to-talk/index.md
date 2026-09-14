@@ -67,7 +67,7 @@ The notifications page is where I expose 3 very important hints:
 - A blocked external Initech delivery reference: `IR-4472`.
 - A link to `/docs/`.
 ![[Pasted image 20260914145908.png]]
-## Published Docs
+# Published Docs
 
 If they try `robots.txt`, `/admin`, `/.git/HEAD` they won't get anything, but I intentionally left `/docs/` open:
 
@@ -182,7 +182,7 @@ They just loop positions `1..36` with alphabet `0123456789abcdef-` (UUID chars) 
 
 `NOTE:` This can be done using SQLmap too, and dump the whole database btw 
 
-## gRPC 0.11.0 Override
+# gRPC 0.11.0 Override
 
 There is a published CVE [CVE-2026-48599](https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599) --> Authorization bypass via path binding override in elixir-grpc/grpc HTTP transcoding, which this is the core bug of the challenge.
 
