@@ -1,5 +1,5 @@
 +++
-title = 'TenantExchange | CAT CTF Web Challenge'
+title = 'We need to talk | CAT CTF 26'
 date = '2026-09-12T00:00:00-04:00'
 draft = false
 slug = 'tenantexchange'
