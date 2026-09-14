@@ -4,11 +4,13 @@ date = '2026-09-12T00:00:00-04:00'
 draft = false
 slug = 'tenantexchange'
 description = 'Chaining pre-OTP session issue, blind SQLi oracle, and grpc 0.11.0 tenant_id override to read a restricted Initech document.'
-tags = ["Web", "CTF", "SQLi", "Auth-Bypass", "Hard"]
+tags = ["Web", "CTF", "SQLi", "Auth-Bypass", "gRPC Override", "Hard"]
 +++
 
-Hey Everyone, this is a walkthrough for **TenantExchange**, one of the most interesting web challenges because it chains 3 different bugs together to get the flag. Let's goooo
-![[Screenshot 2026-09-14 142722.png]]
+Hey Everyone, this is the write-up of the web challenge "We need to talk" I created in in CAT CTF 26 that was only solved 5 times over +600 teams. Let's gooooo.
+
+<img width="627" height="676" alt="Screenshot 2026-09-14 142722" src="https://github.com/user-attachments/assets/5fe6670b-ec60-41f7-bfda-c7ec48d6ff9d" />
+
 
 The challenge gives us a web app with a normal analyst login / registration flow. The end goal is to read a restricted **Initech** incident document `IR-4472` while we are only an **Acme** user, and the flag is appended at runtime only when we get that document.
 
@@ -20,7 +22,9 @@ The challenge gives us a web app with a normal analyst login / registration flow
 4. Chain everything in one solver to get the flag.
 
 After opening the challenge players will get this landing login / register page.
-![[Pasted image 20260914145519.png]]
+
+<img width="1327" height="796" alt="Screenshot 2026-09-14 145512" src="https://github.com/user-attachments/assets/99d76663-0196-4663-9ba9-32c04886ee3d" />
+
 # Recon - What I Want Players To Do
 
 I designed the flow so players must register a new Acme analyst account.
@@ -34,6 +38,7 @@ test1@Test
 ```
 
 After register + login, my app redirects them to `/otp`. The OTP page says email verification is required.
+
 
 I made the OTP endpoint never accept a code on purpose, so brute forcing the OTP is a dead.
 
@@ -227,7 +232,7 @@ Their Flag is: `CATF{pr3_07p_535510n_bl1nd_5ql1_grpc_73n4n7_0v3rr1d3}`
 # Resources
 
 - Blind SQL injection boolean oracle technique I built
-- grpc 0.11.0 HTTP transcoder query override behavior I abused
+- grpc 0.11.0 HTTP transcoder query override behavior I abused [CVE-2026-48599][https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599]
 - UUID exfiltration via `substring(id::text,pos,1)` I left as the only way
 
 Happy Hacking :)
