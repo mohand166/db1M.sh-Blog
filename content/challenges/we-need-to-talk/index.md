@@ -115,7 +115,7 @@ GET /api/v1/tenants/{tenant_id}/documents/{doc_id}
 
 So now they know the API is `GET /api/v1/tenants/{tenant_id}/documents/{doc_id}` and it is transcoded via grpc.
 
-## Blind SQL Injection in /exchange/lookup (Oracle)
+# Blind SQL Injection in /exchange/lookup (Oracle)
 
 My mission for them now is to get the Initech document UUID, because I made the flag body **not** in SQL, but the Initech document UUID is. I read the flag from `FLAG` at runtime only.
 
