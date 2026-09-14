@@ -19,7 +19,7 @@
       <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         {{ .Title | emojify }}
       </h1>
-      {{ if eq .Section "posts" }}
+      {{ if or (eq .Section "posts") (eq .Section "challenges") }}
         {{ $featured := "" }}
         {{ $images := .Resources.ByType "image" }}
         {{ range slice "*feature*" "*cover*" "*thumbnail*" }}
