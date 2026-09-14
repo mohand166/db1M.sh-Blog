@@ -1,5 +1,5 @@
 +++
-title = 'We need to talk | CAT CTF 26'
+title = 'We Need To Talk Web Challenge | CAT CTF 26'
 date = '2026-09-12T00:00:00-04:00'
 draft = false
 slug = 'tenantexchange'
@@ -25,7 +25,7 @@ After opening the challenge players will get this landing login / register page.
 
 <img width="1327" height="796" alt="Screenshot 2026-09-14 145512" src="https://github.com/user-attachments/assets/99d76663-0196-4663-9ba9-32c04886ee3d" />
 
-# Recon - What I Want Players To Do
+# Recon
 
 I designed the flow so players must register a new Acme analyst account.
 
