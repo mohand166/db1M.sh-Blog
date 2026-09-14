@@ -184,7 +184,7 @@ They just loop positions `1..36` with alphabet `0123456789abcdef-` (UUID chars) 
 
 ## gRPC 0.11.0 Override
 
-There is a published CVE [CVE-2026-48599][https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599] --> Authorization bypass via path binding override in elixir-grpc/grpc HTTP transcoding, which this is the core bug of the challenge.
+There is a published CVE [CVE-2026-48599](https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599) --> Authorization bypass via path binding override in elixir-grpc/grpc HTTP transcoding, which this is the core bug of the challenge.
 
 Now they have the Initech UUID, I expect them to try to read it directly and fail as I designed:
 
@@ -232,7 +232,7 @@ Their Flag is: `CATF{pr3_07p_535510n_bl1nd_5ql1_grpc_73n4n7_0v3rr1d3}`
 # Resources
 
 - Blind SQL injection boolean oracle technique I built
-- grpc 0.11.0 HTTP transcoder query override behavior I abused [CVE-2026-48599][https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599]
+- grpc 0.11.0 HTTP transcoder query override behavior I abused [CVE-2026-48599](https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599)
 - UUID exfiltration via `substring(id::text,pos,1)` I left as the only way
 
 Happy Hacking :)
