@@ -1,12 +1,12 @@
 +++
-title = "Canon Collapse | IEEE VICTORIS CTF 2026"
+title = "Canon Collapse | IEEE VICTORIS CTF 2026 Qualifications"
 date = "2026-09-18"
 tags = ["CTF", "Web", "WAF-Bypass", "JSON-Parser-Differential", "Unicode-Normalization", "Medium"]
 description = "Chaining a JSON parser differential, an escaped duplicate key to smuggle past the WAF, and a fullwidth NFKC normalization gap to export prime/audit-final as demo."
 draft = false
 +++
 
-Hey Everyone, this one's the wildest web challenge I tackled at **IEEE VICTORIS CTF 26**, and I got the **first blood** on it. Only 2 solves across the whole competition. The entire kill chain boils down to one idea: make every layer of the backend see a different version of the same bytes. Let's goooo
+Hey Everyone, this one's the wildest web challenge I tackled at **IEEE VICTORIS CTF 26 Qualifications**, and I got the **first blood** on it. Only 2 solves across the whole competition. The entire kill chain boils down to one idea: make every layer of the backend see a different version of the same bytes. Let's goooo
 
 This one was built as an **anti-AI** challenge, so it threw human verification at us constantly, a gate with a real CAPTCHA that had to be solved by hand every few minutes. Once past it, the Canon Export Console lives at `https://165.227.130.95:65123/`. We start as a **demo** tenant viewer, and our target is a **restricted** compliance report, `prime/audit-final` — one we are definitely not supposed to read.
 
