@@ -1,10 +1,9 @@
 +++
-title = 'Canon Collapse | Bypass the WAF and read the restricted audit'
-date = '2026-09-18T00:00:00-04:00'
+title = "Canon Collapse | IEEE VICTORIS CTF 2026"
+date = "2026-09-18"
+tags = ["CTF", "Web", "WAF-Bypass", "JSON-Parser-Differential", "Unicode-Normalization", "Medium"]
+description = "Chaining a JSON parser differential (\u0072eport last-wins), an escaped duplicate key to smuggle past the WAF, and a fullwidth \uff50\uff52\uff49\uff4d\uff45 NFKC normalization gap to export prime/audit-final as demo."
 draft = false
-slug = 'canon-collapse'
-description = 'Chaining a JSON parser differential (\u0072eport last-wins), an escaped duplicate key to smuggle past the WAF, and a fullwidth \uff50\uff52\uff49\uff4d\uff45 NFKC normalization gap to export prime/audit-final as demo.'
-tags = ["Web", "CTF", "WAF-Bypass", "JSON-Parser-Differential", "Unicode-Normalization", "Medium"]
 +++
 
 Hey Everyone, this one's the wildest web challenge I tackled at IEEE VICTORIS CTF 26 — and I got the **first blood** on it. Only 2 solves across the whole competition. The entire kill chain boils down to one idea: make every layer of the backend see a different version of the same bytes. Let's goooo
