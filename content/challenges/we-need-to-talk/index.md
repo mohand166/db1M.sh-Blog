@@ -231,8 +231,7 @@ Their Flag is: `CATF{pr3_07p_535510n_bl1nd_5ql1_grpc_73n4n7_0v3rr1d3}`
 
 # Resources
 
-- Blind SQL injection boolean oracle technique I built
-- grpc 0.11.0 HTTP transcoder query override behavior I abused [CVE-2026-48599](https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599)
-- UUID exfiltration via `substring(id::text,pos,1)` I left as the only way
+- Pre OTP session issue technique. 
+- Blind SQL injection boolean oracle technique 
+- grpc 0.11.0 HTTP transcoder query override behavior abused [CVE-2026-48599](https://vulners.com/vulnrichment/VULNRICHMENT:CVE-2026-48599)
 
-Happy Hacking :)
