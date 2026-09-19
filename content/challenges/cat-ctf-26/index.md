@@ -1,5 +1,5 @@
 +++
-title = "CAT CTF 26 — Entry Level (Author Write-Ups)"
+title = "Write Ups of Challenges I created in CAT CTF 26 Entry Level"
 date = "2026-03-23"
 tags = ["CTF", "Web", "Easy"]
 description = "Write-ups for 3 web challenges I created at CAT CTF 26: Admin Jokes, Forest Secrets, and Paper Tail."
