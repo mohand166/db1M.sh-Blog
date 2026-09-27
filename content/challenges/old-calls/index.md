@@ -285,7 +285,7 @@ And every `clients/*/restore-notes.txt` says the same thing, this one is Harbor 
 Three places in the tree saying the same thing is the hint. The flag is also not a VaultLine
 secret — it's a client artifact, and VaultLine is just the backup provider.
 
-# Step 5 - TYPE I or the Archive Is Dead
+# TYPE I or the Archive Is Dead
 
 Two ways to get the file. Both end at 568 bytes.
 
