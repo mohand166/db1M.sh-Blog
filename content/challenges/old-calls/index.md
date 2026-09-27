@@ -1,5 +1,5 @@
 +++
-title = "Old Calls | Misc Challenge I wrote in CAT CTF 26 Quals"
+title = "Old Calls Misc Challenge I Wrote| CAT CTF 26 Quals"
 date = "2026-09-26"
 tags = ["CTF", "Misc", "Git-Forensics", "FTP", "Easy"]
 description = "How I built Old Calls: a scrubbed-but-exposed .git leaks its real FTP password through an unreachable commit that only git fsck finds, the evidence archive must be pulled in binary mode, and the ZipCrypto inside it cracks with rockyou."
@@ -10,7 +10,7 @@ Hey security folks, The challenge that wasn't solved by codex until some hours l
 
 ![The VaultLine Systems target — nginx serving the marketing site with an exposed .git, and the vsftpd backup drop](images/00-intro.png)
 
-The target is a backup-operations box, **VaultLine Systems**. Two services are exposed:
+You only given an IP, The target is a backup-operations box, Two services are exposed:
 
 ```text
 21/tcp    vsftpd 3.0.3     the evidence archive
@@ -22,18 +22,18 @@ The web root is a static site (`index.html`, `about.html`, `changelog.html`, `ca
 **The intended chain is:**
 
 1. Find the exposed `.git` directory on `8080` and pull `HEAD` / `refs/heads/master`.
-2. Walk the `parent` chain and read every version of `config.py` — the two visible credentials are both decoys (one wrong password, one decommissioned host).
+2. Walk the `parent` chain and read every version of `config.py`, the two visible credentials are both decoys (one wrong password, one decommissioned host).
 3. Find that `.git/ORIG_HEAD` and `.git/logs/` have been scrubbed, so the easy breadcrumbs are gone.
-4. Dump `.git/objects/` (nginx has `autoindex on`), then let git tell you what is unreachable: `git fsck --unreachable --no-reflogs` → one commit, one tree, one blob that belong to no ref.
-5. Read the unreachable commit `f47e6434` ("temp creds for staging push, will fix before merging to main") and its `config.py` blob — that is where the working FTP password lives.
+4. Dump `.git/objects/`, then let git tell you what is unreachable: `git fsck --unreachable --no-reflogs` → one commit, one tree, one blob that belong to no ref.
+5. Read the unreachable commit `f47e6434` and its `config.py` blob, that is where the working FTP password lives.
 6. Log into FTP as `svc_backup`, walk the shares, and find `clients/harbor-logistics/evidence/flag.dat` with a manifest telling you the exact size and SHA-256.
 7. Pull it in **binary** mode. ASCII mode silently rewrites bytes and the archive stops being a valid ZIP.
 8. Crack the ZipCrypto with `zip2john` + rockyou, extract, done.
 
-<!-- SCREENSHOT 01: Take a screenshot of the VaultLine Systems landing page on :8080 (hero, the three service cards, footer). Save it as images/01-landing.png and uncomment the image line below. -->
-<!-- ![VaultLine Systems landing page](images/01-landing.png) -->
+<img width="1245" height="750" alt="image" src="https://github.com/user-attachments/assets/9ca5a44b-7851-45a3-ae11-d6a3d3cafc3f" />
 
-# Step 0 - Confirm the Two Ports
+
+# Confirm the Two Ports
 
 ```bash
 nmap -sV -p 21,8080 16.16.115.58
