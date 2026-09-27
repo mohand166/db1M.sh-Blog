@@ -1,0 +1,93 @@
+OLD CALLS — COVER IMAGE PROMPT PACK
+Target size: 1280 x 721 px (16:9-ish, matches the canon-collapse feature.png)
+Style reference: https://www.eljooker.tech/assets/img/posts/2026-09-17-My%20CAT%20CTF%2026%20OSINT%20Challenges/cover.png
+Save as: feature.png inside the page bundle (Hugos Blowfish picks up any file named feature*)
+
+--------------------------------------------------------------------------------
+PROMPT A  — for models that accept a reference image URL
+(GPT-Image / Nano Banana / Ideogram / Firefly "reference image" slot)
+--------------------------------------------------------------------------------
+Use the attached reference image ONLY for visual style: same composition weight,
+same lighting, same color grade, same typography treatment, same level of detail.
+Do not copy its subject matter.
+
+Create a cybersecurity CTF cover image, exactly 1280x721 pixels, horizontal.
+
+Subject: a dark server-room style composition that tells one story — a git
+repository left exposed on a web server.
+- Right side, dominant: a wall of small rectangular file tiles arranged like a
+  directory listing, most of them dim slate-grey and unreadable, three of them
+  glowing cyan and pulled slightly forward, visually detached from the grid
+  (these are the unreachable objects).
+- A thin glowing cyan git commit graph line running through the tiles: a long
+  main branch of nodes, and one short branch that splits off, travels a little
+  way, and dead-ends in the dark with no ref label attached to it.
+- Lower left, secondary: the silhouette of a single metal server rack / NAS
+  chassis with one small cyan status LED, low contrast, out of focus.
+- Faint background texture: rows of monospace characters and zlib/hex noise,
+  very low opacity, like a directory index nobody meant to publish.
+
+Mood: quiet, forensic, "this should not be exposed" — not action-movie hacker.
+Cold cyan (#22d3ee) accent light on near-black slate, one warm amber warning
+glint on the dead-end branch, soft volumetric haze, shallow depth of field,
+cinematic, 35mm, high detail, no people's faces.
+
+Typography (keep it minimal and let the reference's title treatment guide you):
+- Large bold uppercase title: "OLD CALLS"
+- Smaller uppercase subtitle beneath: "EXPOSED .git // FTP TYPE I // ZIPCRYPTO"
+- Optional tiny mono tag in a corner: "AUTHOR WRITEUP"
+Crisp, correctly spelled, no extra words, no lorem ipsum.
+
+--------------------------------------------------------------------------------
+PROMPT B  — Midjourney v7 (no style-reference slot; describe instead)
+--------------------------------------------------------------------------------
+cinematic cybersecurity CTF key art, dark server room, wall of dim file tiles
+like an exposed directory listing, three tiles glowing cyan and floating out of
+the grid, thin glowing cyan git branch graph with one short branch dead-ending
+in shadow, faint monospace and hex noise texture, single server rack silhouette
+lower left with one cyan LED, cyan and near-black palette with one small amber
+warning accent, volumetric haze, shallow depth of field, 35mm, moody forensic
+atmosphere, bold uppercase title "OLD CALLS" and smaller subtitle
+"EXPOSED .git // FTP TYPE I // ZIPCRYPTO" --ar 16:9 --style raw --stylize 250
+::1280x721
+
+--------------------------------------------------------------------------------
+PROMPT C  — FLUX / SDXL (positive + negative)
+--------------------------------------------------------------------------------
+Positive:
+cyber security CTF cover art, exposed git repository on a web server, grid of
+dim file tiles like a directory index, three tiles highlighted glowing cyan and
+detached from the grid, glowing cyan commit graph line with a short dead-end
+branch, faint terminal monospace text texture, dark server rack silhouette,
+cyan accent lighting on near-black slate, single amber warning highlight,
+volumetric haze, cinematic, ultra detailed, 35mm, sharp, moody, 1280x721
+
+Negative:
+people, faces, hands, hoodie, mask, skull, hacker cliché, green matrix rain,
+red alert banners, padlock clipart, cartoon, 3d render text, watermark, logo,
+extra text, misspellings, lorem ipsum, cluttered, low contrast, blurry, jpeg
+artifacts, oversaturated
+
+Recommended Flux/SDXL params: 1280x721, 4 steps (flux) or 28 steps + CFG 4.0
+(SDXL), guidance 3.0-3.5 for flux-schnell, hi-res fix at 1.5x if upscaling.
+
+--------------------------------------------------------------------------------
+IF THE MODEL GARBLES THE TEXT
+--------------------------------------------------------------------------------
+Generate the art with NO text at all, then add the type in GIMP / Photopea /
+Photoshop so it is pixel-correct:
+  Title:    OLD CALLS                (heavy condensed sans, all caps, cyan-white)
+  Subtitle: EXPOSED .git // FTP TYPE I // ZIPCRYPTO   (mono, ~40% title size, cyan)
+  Guide:    left-aligned, 7% margin, baseline sits on the lower third line
+  Keep text clear of the tile grid (right 60% of the frame) for legibility.
+
+--------------------------------------------------------------------------------
+CONTEXT NOTES (why the image looks like this)
+--------------------------------------------------------------------------------
+Exposed .git     -> directory listing of .git/objects, three unreachable
+                    objects highlighted (unreachable commit + tree + blob)
+old call commit  -> the cyan branch that splits off and dead-ends (reset away,
+                    no ref, still in the object database)
+decoy history    -> the dim tiles: reachable commits that lead nowhere useful
+FTP TYPE I       -> the single server rack / binary transfer
+ZipCrypto        -> the amber glint: the archive that still needs a password
