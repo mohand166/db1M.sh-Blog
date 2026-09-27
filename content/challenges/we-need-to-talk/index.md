@@ -1,9 +1,9 @@
 +++
-title = 'We Need To Talk Web Challenge | CAT CTF 26'
+title = 'We Need To Talk Web Challenge | CAT CTF 26 Quals'
 date = '2026-09-12T00:00:00-04:00'
 draft = false
 slug = 'tenantexchange'
-description = 'Chaining pre-OTP session issue, blind SQLi oracle, and grpc 0.11.0 tenant_id override to read a restricted Initech document.'
+description = 'How I built a challenge that intended is chaining pre-OTP session issue, blind SQLi oracle, and grpc 0.11.0 tenant_id override to read a restricted Initech document.'
 tags = ["Web", "CTF", "SQLi", "Auth-Bypass", "gRPC Override", "Hard"]
 +++
 
