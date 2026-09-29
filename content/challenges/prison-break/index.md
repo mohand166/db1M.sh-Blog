@@ -10,7 +10,7 @@ Hey folks, I co-authored **Prison Break** for CAT CTF 26 finals with ma bro - [M
 
 This is how the challenge looked in CTFd at publication; it had one solve:
 
-<img width="523" height="693" alt="Screenshot 2026-09-29 124512" src="https://github.com/user-attachments/assets/3ec2bbb1-233a-4edd-a981-5919fd647b2c" />
+<img width="523" height="693" alt="Screenshot 2026-09-29 124512" src="https://github.com/user-attachments/assets/1acdd50a-61cb-4c62-9078-470c7728fca8" />
 
 
 The challenge ships an internal staff terminal for a fictional facility, **Ironveil Penitentiary**. You are a correctional officer on night shift. The target is a `staff_token` that only the **admin session** may read, and that token is the only key to the protected shift attachment holding the flag.
@@ -64,7 +64,7 @@ GET the identical raw URI without a cookie
 This is why the writeup should be read as a source-code trace rather than as a blackbox recipe: the cache key comes from Nginx, the route match comes from Express, and the authorization cookie exists only on the bot request.
 
 
-# Recon - The Three Things I Left on Purpose
+# Recon: The Three Things I Left on Purpose
 
 Before I explain the bug, here is what I wanted players to notice first. None of these are vulnerabilities yet, they are just the shape of the app.
 
