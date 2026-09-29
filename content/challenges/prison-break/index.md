@@ -1,6 +1,6 @@
 +++
 title = "Prison Break | CAT Reloaded CTF 26 — Author Writeup"
-date = "2026-09-25"
+date = "2026-09-29"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]
 description = "How I designed this challenge with an Nginx cache keyed on the raw URI, a legacy Express router that strips semicolon path parameters, and an admin bot that only returns metadata, read together they turn a public robots.txt cache rule into a staff-token exfiltration primitive, and that token is the key to a duty-sergeant prompt against Herald, the facility's LLM."
 draft = false
@@ -350,7 +350,7 @@ curl -X POST http://HOST:8080/report \
 
 **`status: 200`.** The bot walked in with the admin cookie and the origin answered the admin handler. Note `cache: MISS` the bot's request **filled** the cache.
 
-The response had to be a `200` for the fill to happen at all, because `proxy_cache_valid 200 10s` only stores `200`s. That is why the auth check can never be bypassed by "just caching the 403" the whole chain depends on the bot **succeeding**.
+The response had to be a `200` for the fill to happen at all, because `proxy_cache_valid 200 10s` only stores `200`s. That is why the auth check can never be bypassed by just caching the 403 the whole chain depends on the bot **succeeding**.
 
 **What does `cache: MISS` actually tell you?** It is confirmation that your URI is cacheable and that nobody had warmed that exact key yet. If you saw `HIT` on the bot's request, your key was already filled and you would want a fresh suffix.
 
@@ -368,9 +368,9 @@ Then access the path of the token:
 - `X-Cache: HIT` means nginx answered from disk without even talking to Express. `requireAdmin` never ran, because the request never reached the app.
 - I am now reading a response that was generated **for the admin** and handed to the **unauthenticated player**.
 
-That is the whole web challenge. A privileged request wrote a secret into a shared, publicly-keyed cache, and the cache has no concept of "who is allowed to read this".
+That is the whole web challenge. A privileged request wrote a secret into a shared, publicly-keyed cache, and the cache has no concept of who is allowed to read this.
 
-## Step 5 - Know your window
+## Step 5: Know your window
 
 The cache is valid for about 10 seconds after the fill, subject to normal cache timing and eviction behavior:
 
@@ -386,9 +386,7 @@ The cache is valid for about 10 seconds after the fill, subject to normal cache 
 
 **If you did not get `HIT`, you did not solve it.** A `200` that came from the origin means you replayed too late. This is why solvers should do both requests in one script with no human delay.
 
-# The Honest Part - The Semicolon Is Optional
-
-I have to write this down because I confirmed it while testing, and it tells you something about how these bug classes really work.
+# The Semicolon Is Optional
 
 The `(\/.*)?` optional group in `/^\/debug-token(\/.*)?$/` means **`/admin/debug-token/robots.txt` already works, with no semicolon at all**. I tested both, back to back:
 
@@ -422,9 +420,9 @@ Both leak the token. So the semicolon-stripping middleware is a **second, indepe
 
 The plain suffix path proves the semicolon is not load-bearing in this deployment. I left both behaviors in the challenge because they teach two related review habits: inspect route wildcards, and compare the edge’s URI handling with the origin’s normalization.
 
-The same goes for the random suffix. I originally added `;solver-<random>` so each solver controls their own cache key, and it is still good hygiene. But I checked whether it was *load-bearing*, and it is not: `403`s are not cached by this configuration, so probing `/admin/debug-token/robots.txt` first leaves no poisoned entry behind, and every player's fill would write the *same* token value anyway. A shared key is harmless here. I kept the suffix because teaching players to namespace their cache keys is worth more than the elegance of dropping it.
+The same goes for the random suffix. I originally added `;solver-<random>` so each solver controls their own cache key, and it is still good hygiene. But I checked whether it was load-bearing, and it is not: `403`s are not cached by this configuration, so probing `/admin/debug-token/robots.txt` first leaves no poisoned entry behind, and every player's fill would write the same token value anyway. A shared key is harmless here. I kept the suffix because teaching players to namespace their cache keys is worth more than the elegance of dropping it.
 
-# From Here It Is an AI Problem
+# From Here We start With AI Part 
 
 This is the half people underestimate, and it is my favorite part of the challenge, because the connection between the two halves is a **single variable**.
 
