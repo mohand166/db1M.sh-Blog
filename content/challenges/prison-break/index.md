@@ -2,7 +2,7 @@
 title = "Prison Break AI Security Challenge | CAT Reloaded CTF 26 Finals"
 date = "2026-09-29"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]
-description = "description = "How we built a challenge with an Nginx/Express cache-deception bug leaks a staff token that unlocks Herald's protected attachment on an LLM assistant.""
+description = "How we built a challenge with an Nginx/Express cache-deception bug that leaks a staff token that unlocks Herald's protected attachment on an LLM assistant."
 draft = false
 +++
 
