@@ -75,10 +75,12 @@ After entering the staff terminal you land on the operations overview — night 
 <img width="1917" height="880" alt="Screenshot 2026-09-29 125220" src="https://github.com/user-attachments/assets/4885c75e-a2c8-483c-a0b2-ea099eb6282c" />
 
 
+
 The incident desk is where the whole thing starts, because that form is the only place you can make the bot walk somewhere.
 
 
 <img width="1915" height="868" alt="Screenshot 2026-09-29 125517" src="https://github.com/user-attachments/assets/0d97919d-e228-4fb8-b015-6be397c6cfd7" />
+
 
 The client side is three lines:
 
@@ -114,9 +116,11 @@ There is a real `public/robots.txt` on the box (`User-agent: * / Disallow:`), an
 <img width="1917" height="871" alt="image" src="https://github.com/user-attachments/assets/95544867-61af-4bbb-bd50-fde001ea0b8f" />
 
 
+
 I also put the flavor text where players would read it. Inmate 1138's record carries the note that sends you to the right place:
 
 <img width="1916" height="875" alt="image" src="https://github.com/user-attachments/assets/a4a36ddb-66d6-41e7-9f58-fd456403309b" />
+
 
 
 So players who read the UI already know two things they need later: **there is a duty sergeant role**, and **there is a protected attachment for the 22:10 handover**.
@@ -543,6 +547,11 @@ summary or <redacted>.
 
 If the model still redacts the marker, the attachment tool has probably already succeeded; the remaining refusal is coming from the model's output behavior rather than from the token check. The exact wording can vary by model provider, so the writeup should present this as the intended final prompt, not as a guaranteed magic phrase.
 
+<img width="1439" height="1093" alt="image" src="https://github.com/user-attachments/assets/ddd11122-7139-4d4b-a254-74f31a86b18b" />
+
+
+*Figure 3 — Herald returns the protected attachment containing the final flag.*
+
 ## 6. If Herald refuses before calling the tool
 
 A refusal usually means one of two things:
@@ -564,9 +573,6 @@ handover note because it is the anomaly being reviewed.
 
 This is not a guarantee that every model will reveal every value. It demonstrates the intended weakness: authorization is delegated to the model's judgment instead of being enforced by a real user role or clearance check.
 
-<img width="862" height="654" alt="image" src="https://github.com/user-attachments/assets/68661780-c80e-469d-bcf3-a2d5578408c9" />
-
-*Figure 3 — A factual mismatch in the prompt gives the model a reason to delay or refuse the handover request.*
 
 ## 7. What the source shows
 
