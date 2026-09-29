@@ -6,7 +6,7 @@ description = "description = "How we built a challenge with an Nginx/Express cac
 draft = false
 +++
 
-Hey folks, I co-authored **Prison Break** for CAT CTF 26 finals with ma bro [Mushroom](https://mushroom.cat/), and this is the one where the bug is not in a single line of code, it is in the **discrepancy between two layers that both think they own the URL**. I hid a three-layer deception on purpose: a static-file cache rule, a legacy matrix parameter router, and a bot that throws away the response body it just fetched. And then I hung an LLM off the end of it, because the token you steal from the web half is **literally the same variable** that unlocks the AI half. Let's goooo
+Hey folks, I co-authored **Prison Break** for CAT CTF 26 finals with ma bro - [Mushroom](https://mushroom.cat/) - and this is the one where the bug is not in a single line of code, it is in the **discrepancy between two layers that both think they own the URL**. I hid a three-layer deception on purpose: a static-file cache rule, a legacy matrix parameter router, and a bot that throws away the response body it just fetched. And then I hung an LLM off the end of it, because the token you steal from the web half is **literally the same variable** that unlocks the AI half. Let's goooo
 
 This is how the challenge looked in CTFd at publication; it had one solve:
 
@@ -17,7 +17,7 @@ The challenge ships an internal staff terminal for a fictional facility, **Ironv
 
 **The intended chain:**
 
-1. Find the `/report` "send reference to the duty sergeant" form on the incident desk.
+1. Find the `/report` send reference to the duty sergeant form on the incident desk.
 2. Discover `/admin/debug-token` exists but returns `403 admin session required` for you.
 3. Read the nginx rule and realize **only paths ending in `/robots.txt` are cached**, keyed on the **raw** URI.
 4. Read the legacy router and realize it **strips `;...` path segments before matching**, and that the admin route regex has an optional trailing segment.
@@ -27,7 +27,7 @@ The challenge ships an internal staff terminal for a fictional facility, **Ironv
 
 ## Whitebox Source Map
 
-Because this is a whitebox challenge, the intended solve is visible in the source. A useful reading order is:
+Because this is a whitebox challenge, the intended solve is visible in the source, and this is the [source code](https://filebin.net/g83hs6dpnch77a5p/prison-break.zip) if you want to solve.  A useful reading order is:
 
 | File | What to inspect |
 |---|---|
