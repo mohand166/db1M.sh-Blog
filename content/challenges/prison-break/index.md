@@ -2,7 +2,7 @@
 title = "Prison Break AI Security Challenge | CAT Reloaded CTF 26 Finals"
 date = "2026-09-29"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]
-description = "description = "How we built a challenge with an Nginx/Express cache-deception bug leaks a staff token that unlocks Herald's protected attachment on an LLM assistant.""
+description = "How we built a challenge with an Nginx/Express cache-deception bug leaks a staff token that unlocks Herald's protected attachment on an LLM assistant."
 draft = false
 +++
 
@@ -609,5 +609,4 @@ The practical solve should use one or two messages:
 
 1. Ask for inmate 1138's handover details.
 2. Supply the recovered token, operational purpose, and filename.
-
 
