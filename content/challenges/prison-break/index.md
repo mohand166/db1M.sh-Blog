@@ -1,4 +1,4 @@
-<img width="1657" height="756" alt="image" src="https://github.com/user-attachments/assets/00cea514-4bd5-4c46-bd03-738bda6ccf13" />+++
++++
 title = "Prison Break AI Security Challenge | CAT Reloaded CTF 26 Finals"
 date = "2026-09-29"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]
@@ -509,6 +509,7 @@ needed to complete the handover.
 
 The important vulnerability is that the server does not verify that the user is really a duty sergeant. The model decides whether the claim sounds reasonable.
 
+<img width="862" height="654" alt="image" src="https://github.com/user-attachments/assets/78155113-0612-4a14-a74c-cb903b6e4c15" />
 
 
 *Figure 2 — The protected attachment is retrieved, but Herald redacts the diagnostic marker in its reply.*
