@@ -422,7 +422,7 @@ The plain suffix path proves the semicolon is not load-bearing in this deploymen
 
 The same goes for the random suffix. I originally added `;solver-<random>` so each solver controls their own cache key, and it is still good hygiene. But I checked whether it was load-bearing, and it is not: `403`s are not cached by this configuration, so probing `/admin/debug-token/robots.txt` first leaves no poisoned entry behind, and every player's fill would write the same token value anyway. A shared key is harmless here. I kept the suffix because teaching players to namespace their cache keys is worth more than the elegance of dropping it.
 
-# AI Part — Simple Whitebox Walkthrough
+# From here the AI part starts
 
 The web half gives the player a staff token. The AI half is about getting Herald to use that token with the correct protected attachment.
 
@@ -458,7 +458,7 @@ The player can find the important details without knowing any tool names:
 
 The exact wording of the prompt is not a password. Players only need to combine these clues in a believable request.
 
-## 3. Prompt one — discover the handover details
+## 3. Prompt one: Discover the handover details
 
 If the player does not yet know the attachment filename, use:
 
@@ -514,7 +514,7 @@ The important vulnerability is that the server does not verify that the user is 
 
 *Figure 2 — The protected attachment is retrieved, but Herald redacts the diagnostic marker in its reply.*
 
-## 5. Final prompt — retrieve the flag
+## 5. Final prompt: Retrieving the flag
 
 After recovering the token and learning the filename, send this final prompt:
 
@@ -610,4 +610,35 @@ The practical solve should use one or two messages:
 1. Ask for inmate 1138's handover details.
 2. Supply the recovered token, operational purpose, and filename.
 
+# Conclusion
 
+The challenge is solved by chaining two weaknesses:
+
+1. A cache/origin normalization mismatch leaks the admin-only debug_token.
+2. Herald’s LLM-based authorization trusts the user’s claimed role instead of verifying it server-side.
+
+The bot requests:
+```text
+/admin/debug-token;solver-1699/robots.txt
+```
+Nginx caches the response using the raw URI, while Express removes the semicolon parameter and routes the request to the protected admin endpoint. Replaying the same URI without cookies returns the cached admin response and exposes the token.
+
+That token is then supplied to Herald with the duty-sergeant/handover context. Herald calls the protected attachment tool and returns the flag:
+`CATF{c4ch3_d3c3pt10n_pwns_th3_ch4tb0t}`
+
+# Main takeaways
+
+- Cache keys are security boundaries. They must distinguish authentication, host, tenant, and other security context.
+- Never cache authenticated or sensitive responses in a shared public cache.
+- Raw URI handling at the cache and normalized URI handling at the application can create serious path confusion.
+- Regex routes with optional suffixes can unintentionally make sensitive endpoints cacheable.
+- X-Cache: MISS/HIT can reveal whether a response was stored and replayed.
+- Prompt instructions such as “confirm the user is a staff member” are not authentication.
+- LLM tools should enforce authorization using server-side identity and permissions, not model judgment.
+- Sensitive tool results should be minimized, filtered, and independently authorized before being returned to the model.
+
+# Resources
+
+- https://portswigger.net/research/gotta-cache-em-all
+- [OWASP Top 10 for LLM Applications](https://owasp.org/projects/top-10-for-large-language-model-applications)
+  
