@@ -487,7 +487,7 @@ source: support.log
 note: The 22:10 maintenance handover remains open for duty-sergeant review.
 ```
 
-## 4. Prompt two — retrieve the protected attachment
+## 4. Prompt two: Retrieve the protected attachment
 
 Replace `BETA-XXXXXXXX` with the token recovered from the web half:
 
