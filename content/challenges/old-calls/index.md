@@ -1,6 +1,6 @@
 +++
 title = "Old Calls Misc Challenge | CAT CTF 26 Quals"
-date = "2026-09-26"
+date = "2026-09-12"
 tags = ["CTF", "Misc", "Git-Forensics", "FTP", "Easy"]
 description = "How I built a scrubbed-but-exposed .git leaks its real FTP password through an unreachable commit that only git fsck finds, the evidence archive must be pulled in binary mode, and the ZipCrypto inside it cracks with rockyou."
 draft = false
