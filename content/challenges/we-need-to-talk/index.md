@@ -7,7 +7,7 @@ description = 'How I built a challenge that intended is chaining pre-OTP session
 tags = ["Web", "CTF", "SQLi", "Auth-Bypass", "gRPC Override", "Hard"]
 +++
 
-Hey Everyone, this is the write-up of the web challenge "We need to talk" I created in in CAT CTF 26 that was only solved 5 times over +600 teams. Let's gooooo.
+Hey Everyone, this is the write-up of the web challenge "We need to talk" I created in CAT CTF 26 that was only solved 5 times over +600 teams. Let's gooooo.
 
 <img width="627" height="676" alt="Screenshot 2026-09-14 142722" src="https://github.com/user-attachments/assets/5fe6670b-ec60-41f7-bfda-c7ec48d6ff9d" />
 
