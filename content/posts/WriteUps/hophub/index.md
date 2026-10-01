@@ -1,14 +1,14 @@
 +++
 title = "HopHub HubManager HM-7F3A21C4 | Chunked Body Gate Bypass"
 date = "2026-10-01"
-tags = ["CTF", "Web", "NGINX-Bypass", "Chunked-Encoding", "Request-Body-Inspection", "Medium-Hard"]
+tags = ["CTF", "Web", "Chunked-Encoding", "Medium"]
 description = "Normal user to front-door unlock: NGINX json_set reads method from $request_body, Flask trusts the proxy, and 1024 one-byte chunks blind the gate while Flask still sees valid JSON."
 draft = false
 +++
 
 <!-- COVER TODO: save your cover as `feature.png` in this same folder (`hophub-hubmanager/feature.png`). Recommended 1200x630, same as `canon-collapse/feature.png`. Build will pick it up automatically. -->
 
-Hey Everyone, this one is my favorite type of web challenge — no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. Let's goooo
+Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. 
 
 You only get an IP + port. Box is a smart-home hub simulator:
 
@@ -28,12 +28,6 @@ nginx/1.31.6 + Flask backend, one RPC endpoint: POST /api/v1/rpc
 6. Learn gate: `json_set $rpc_method $request_body "method"` + `client_max_body_size 1024`.
 7. Burn parser-differential dead ends.
 8. Send same 1024B JSON as 1024 one-byte chunks — gate blind, Flask parses, flag in `entry_code`.
-
-Flag:
-
-```text
-FahemSec{Ng1nx_1.31.5_h4d_1nt3r3st1ng_Upd4t3s_12af44ed23}
-```
 
 # 0. Burp Setup
 
@@ -124,12 +118,12 @@ Try one per tab:
 {"method":"getState","device":"front_door"}
 ```
 
-![TODO: listCapabilities](images/04-listCapabilities.png)
+<img width="1490" height="676" alt="image" src="https://github.com/user-attachments/assets/55147e5c-f8eb-47b8-8657-29c884358bf6" />
 
 > **Screenshot 04 to insert here — `images/04-listCapabilities.png`:**
 > Repeater `{"method":"listCapabilities"}` -> `200` JSON with `unlockDoor/disableAlarm/factoryReset` all `"scope":"privileged"` visible. Highlight those three lines. Purpose: exposes target methods.
 
-![TODO: listDevices](images/05-listDevices.png)
+<img width="1286" height="720" alt="Screenshot 2026-10-01 183535" src="https://github.com/user-attachments/assets/a0dae21f-f9d0-4801-bdee-6713385182f3" />
 
 > **Screenshot 05 to insert here — `images/05-listDevices.png`:**
 > Repeater `{"method":"listDevices"}` -> shows `front_door` with `type:lock`. Purpose: tells us which device arg passes handler check later.
