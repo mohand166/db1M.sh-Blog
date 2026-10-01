@@ -133,7 +133,7 @@ map $rpc_method $is_restricted {
 Read it line by line, the bypass comes straight from here:
 
 1. `client_max_body_size 1024;` --> Decoded body > 1024 -> 413. Ours must be <=1024.
-2. `client_body_buffer_size 1024;` --> Bodies up to 1024 stay in RAM. Fragmented bodies spill to temp file on disk. Twice 1024 is screaming buffer-boundary — test exactly at 1024.
+2. `client_body_buffer_size 1024;` --> Bodies up to 1024 stay in RAM. Fragmented bodies spill to temp file on disk. Twice 1024 is screaming buffer-boundary, test exactly at 1024.
 3. `json_set $rpc_method $request_body "method";` --> Parse in-memory $request_body as JSON, copy method field.
    Key fact: $request_body is empty when body was written to temp file. No RAM body = nothing to parse = $rpc_method stays empty.
 4. `map ... default 0;` --> unlockDoor -> 1 -> 403. Anything else including empty -> 0 -> allow. Fail-open. Missing is treated as safe.
@@ -173,7 +173,7 @@ Everything that blinds NGINX JSON also breaks Flask strict validation. Stop chan
 
 Note: All methods I used to bypass from many resources and techniques inspired from another challenges I solved before.
 
-# The Bypass — Same Body, Different Framing
+# The Bypass --> Same Body, Different Framing
 
 Insight: `$request_body` is empty when body spooled to temp file. Chunked bodies skip the allocate one buffer fast path, stream + spill, `json_set` sees nothing, but proxy still forwards file upstream.
 
@@ -212,7 +212,7 @@ Transfer-Encoding: chunked
 Connection: close
 ```
 
-**NO Content-Length — wrench icon -> UNCHECK Update Content-Length**
+**NO Content-Length, wrench icon -> UNCHECK Update Content-Length**
 
 One shot script to send our exploit:
 ```python
