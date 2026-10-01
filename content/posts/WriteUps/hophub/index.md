@@ -18,16 +18,6 @@ HubManager HM-7F3A21C4 · fw 2.4.1
 nginx/1.31.6 + Flask backend, one RPC endpoint: POST /api/v1/rpc
 ```
 
-**The intended chain is:**
-
-1. Confirm up in Burp, map `POST /api/v1/rpc`.
-2. Register normal `role:user`, get `session` cookie.
-3. Enumerate with `listCapabilities` — find `unlockDoor/disableAlarm/factoryReset privileged`.
-4. Prove direct `unlockDoor` is `403` at proxy.
-5. Abuse `exportRules` traversal to read `/app/app.py` + `/etc/nginx/nginx.conf`.
-6. Learn gate: `json_set $rpc_method $request_body "method"` + `client_max_body_size 1024`.
-7. Burn parser-differential dead ends.
-8. Send same 1024B JSON as 1024 one-byte chunks — gate blind, Flask parses, flag in `entry_code`.
 
 # 1. Recon
 
