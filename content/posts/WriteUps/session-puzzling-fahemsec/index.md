@@ -15,7 +15,7 @@ Continue and explore. Our challenge today is a **blackbox** challenge from [**Fa
 
 ![index.php](screenshot1.png)
 
-## `index.php` Application Overview
+# Application Overview
 
 The target is a **PHP e-commerce clone** called **Abazon**.
 The pages are:
@@ -60,7 +60,7 @@ The next interesting thing is when chatting with customer services after this st
 
 **THAT'S VERY INTERESTING**, the application used the **same session** to perform many actions (the session for `forget-password` and the session for customer services and this is the main logic of **Session Puzzling Vulnerability** 
 
-## What is Session Puzzling ?
+# What is Session Puzzling ?
 
 **Session Variable Overloading (also known as Session Puzzling)** is an application level vulnerability which can enable an attacker to perform a variety of malicious actions, including but not limited to:
 
@@ -98,6 +98,6 @@ This catching leads us to use the we catch the **admin cookie** after sending a 
 
 ![admin flag](screenshot7.png)
 
-## Reference 
+# Reference 
 
 [OWASP - Testing for Session Puzzling](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/06-Session_Management_Testing/08-Testing_for_Session_Puzzling)
