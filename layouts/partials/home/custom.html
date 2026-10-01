@@ -99,7 +99,7 @@
           <article class="home-post-card" data-tag-item data-tags="{{ range $page.Params.tags }}{{ . | urlize }} {{ end }}">
             <a class="home-post-card__link" href="{{ $page.RelPermalink }}" aria-label="Read {{ $page.Title }}"></a>
             {{ if $featured }}
-              {{ $thumbnail := $featured.Fill "900x480 Center q85" }}
+              {{ $thumbnail := $featured.Fill "900x507 Center q85" }}
               <div class="home-post-card__visual">
                 <img src="{{ $thumbnail.RelPermalink }}" alt="" loading="lazy" decoding="async">
               </div>
