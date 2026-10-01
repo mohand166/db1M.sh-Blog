@@ -74,7 +74,7 @@ This catching leads us to use the we catch the **admin cookie** after sending a 
 
 1. Register a new user and save the cookie `Cookie: PHPSESSID=36d5`
 2. Login with this user.
-3. Now we should make a `POST` request to `forget-password.php` with `username admin` to create overwrite the variable of username with admin and use it to access `admin.php`
+3. Now we should make a `POST` request to `forget-password.php` with `username admin` to create a session which overwrites the variable of username with admin and use it to access `admin.php`
 
 > There is something important here:
 > We should drop some requests or make these requests manually in the **repeater** and **Don't Follow Redirections**, why??
