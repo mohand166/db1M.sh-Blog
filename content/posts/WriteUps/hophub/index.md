@@ -77,7 +77,7 @@ Method `exportRules` takes export name and does `join(export_dir, name)` with no
 {"method":"exportRules","name":"../../../../etc/nginx/nginx.conf"}
 ```
 
-<img width="1495" height="742" alt="image" src="https://github.com/user-attachments/assets/fa0fbc74-1b83-4667-afc3-8bef6b0c877c" />
+<img width="1492" height="737" alt="image" src="https://github.com/user-attachments/assets/633b9125-737c-4f30-a946-c65b0702ac2b" />
 
 **What does this mean?**
 
@@ -128,7 +128,7 @@ map $rpc_method $is_restricted {
 }
 ```
 
-<img width="1492" height="737" alt="image" src="https://github.com/user-attachments/assets/633b9125-737c-4f30-a946-c65b0702ac2b" />
+<img width="1495" height="742" alt="image" src="https://github.com/user-attachments/assets/fa0fbc74-1b83-4667-afc3-8bef6b0c877c" />
 
 Read it line by line, the bypass comes straight from here:
 
