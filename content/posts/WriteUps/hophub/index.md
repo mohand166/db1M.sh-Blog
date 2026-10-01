@@ -1,5 +1,5 @@
 +++
-title = "HopHub HubManager HM-7F3A21C4 | Chunked Body Gate Bypass"
+title = "HopHub Web Challenge | FahemSec"
 date = "2026-10-01"
 tags = ["CTF", "Web", "Chunked-Encoding", "Medium"]
 description = "Normal user to front-door unlock: NGINX json_set reads method from $request_body, Flask trusts the proxy, and 1024 one-byte chunks blind the gate while Flask still sees valid JSON."
@@ -8,7 +8,7 @@ draft = false
 
 <!-- COVER TODO: save your cover as `feature.png` in this same folder (`hophub-hubmanager/feature.png`). Recommended 1200x630, same as `canon-collapse/feature.png`. Build will pick it up automatically. -->
 
-Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag.
+Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. This challenge from [FahemSec](https://fahemsec.com/) platform if you want to solve. Let's digging on :"
 
 You only get an IP + port. Box is a smart-home hub simulator:
 
