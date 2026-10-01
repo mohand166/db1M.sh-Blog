@@ -46,7 +46,7 @@ We have a valid session for my username:
 Tbh, I burnt sometimes exploring the application with AI to catch anything as it **blackbox challegne** and I want to catch the blood :( but I didn't reach anything so I decided to test manually.
 I tested many vulnerabilities in many parameters and functions such as **SQL Injection**, **NoSQL Injection**, **XSS**, and such. The app has many **rabbit holes** btw.
 When testing with non user I catch something:
-When sending a request to `forgot-password.php` and typed any user for example `admin` → we have been redirected to `reset.php` and and if you checked the request in **burp**, you will find that the application created a session for this request **(A session for admin)**.
+When sending a request to `forgot-password.php` and typed any user for example `admin` → we have been redirected to `reset.php` and and if you checked the request in **burp**, you will find that the application created a session with variable username 'admin'.
 
 ![burp session for admin](screenshot3.png)
 
