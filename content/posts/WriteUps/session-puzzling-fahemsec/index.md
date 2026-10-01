@@ -6,9 +6,8 @@ description = "Blackbox challenge from FahemSec platform, using Session Variable
 draft = false
 +++
 
-Hey folks, Did your about **Session Puzzling Vulnerability** before?? 
-Continue and explore ;
-Our challenge today is a **blackbox** challenge from [**FahemSec**](https://fahemsec.com/) platform, using **Session Variable Overwrite via Forgot Password (Session Puzzle)** and get the **flag**. Let's go diving and see :)
+Hey folks, did your about **Session Puzzling Vulnerability** before?? 
+Continue and explore. Our challenge today is a **blackbox** challenge from [**FahemSec**](https://fahemsec.com/) platform, using **Session Variable Overwrite via Forgot Password (Session Puzzle)** and get the **flag**. Let's go diving and see :)
 
 > **Challenge Description:** Some bugs are easy to spot on whitebox but life is not always roses . No **bruteforcing** or **fuzzing** needed as always , flag is waiting for you at `admin.php` 
 
