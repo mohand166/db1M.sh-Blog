@@ -6,7 +6,7 @@ description = "Normal user to front-door unlock: NGINX json_set reads method fro
 draft = false
 +++
 
-<!-- COVER TODO: save your cover as `feature.png` in this same folder (`hophub-hubmanager/feature.png`). Recommended 1200x630, same as `canon-collapse/feature.png`. Build will pick it up automatically. -->
+<!-- Cover: `feature.png` (1280x721), same size as `canon-collapse/feature.png`. -->
 
 Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. This challenge from [FahemSec](https://fahemsec.com/) platform if you want to solve. Let's digging on :"
 
