@@ -6,10 +6,9 @@ description = "Blackbox challenge from FahemSec platform, using Session Variable
 draft = false
 +++
 
-Session Puzzling Challenge - FahemSec 
-Did your about **Session Puzzling Vulnerability** before?? 
+Hey folks, Did your about **Session Puzzling Vulnerability** before?? 
 Continue and explore ;
-Hey folks, our challenge today is a **blackbox** challenge from **FahemSec** platform, using **Session Variable Overwrite via Forgot Password (Session Puzzle)** and get the **flag**. Let's go diving and see :)
+Our challenge today is a **blackbox** challenge from [**FahemSec**](https://fahemsec.com/) platform, using **Session Variable Overwrite via Forgot Password (Session Puzzle)** and get the **flag**. Let's go diving and see :)
 
 > **Challenge Description:** Some bugs are easy to spot on whitebox but life is not always roses . No **bruteforcing** or **fuzzing** needed as always , flag is waiting for you at `admin.php` 
 
@@ -43,7 +42,7 @@ That's good, now we know all about the application, I started visiting all pages
 Let's make an account to see the dashboard, I created a user using `dblm:aa@AA1234` , then logged in with these credentials.
 We have a valid session for my username:
 
-`Cookie: PHPSESSID=36d5bd6dbeb35bbcefd67e2c89b68da0`
+`Cookie: PHPSESSID=36d5....`
 
 Tbh, I burnt sometimes exploring the application with AI to catch anything as it **blackbox challegne** and I want to catch the blood :( but I didn't reach anything so I decided to test manually.
 I tested many vulnerabilities in many parameters and functions such as **SQL Injection**, **NoSQL Injection**, **XSS**, and such. The app has many **rabbit holes** btw.
@@ -80,11 +79,11 @@ This catching leads us to use the we catch the **admin cookie** after sending a 
 
 1. Register a new user and save the cookie `Cookie: PHPSESSID=36d5`
 2. Login with this user.
-3. Now we should make a `POST` request to `forget-password.php` with `username admin` to create a session for admin and use it to access `admin.php`
+3. Now we should make a `POST` request to `forget-password.php` with `username admin` to create overwrite the variable of username with admin and use it to access `admin.php`
 
 > There is something important here:
 > We should drop some requests or make these requests manually in the **repeater** and **Don't Follow Redirections**, why??
->  After sending a request to `forget-password`, the **admin session is created** and it immediately redirect us to `reset.php` which is return the session to our user session and the admin session terminated.
+>  After sending a request to `forget-password`, the **session with admin username variable is created** and it immediately redirect us to `reset.php` which is return the session to our user session and the admin session terminated.
 
 **SO** to perform the attack clearly, that's what should happen:
 
