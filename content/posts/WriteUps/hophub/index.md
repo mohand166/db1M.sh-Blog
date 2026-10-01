@@ -44,11 +44,13 @@ Try one per tab:
 
 For `listDevices`:
 
-<img width="1490" height="676" alt="image" src="https://github.com/user-attachments/assets/55147e5c-f8eb-47b8-8657-29c884358bf6" />.
+<img width="1262" height="673" alt="Screenshot 2026-10-01 183904" src="https://github.com/user-attachments/assets/2c1feb80-34f0-486f-b5b5-98bf031b9b00" />
+
 
 For `listCapabilities`:
 
 <img width="1286" height="720" alt="Screenshot 2026-10-01 183535" src="https://github.com/user-attachments/assets/a0dae21f-f9d0-4801-bdee-6713385182f3" />
+
 
 **What does this mean?**
 
