@@ -8,7 +8,7 @@ draft = false
 
 <!-- Cover: `feature.png` (1280x721), same size as `canon-collapse/feature.png`. -->
 
-Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. This challenge from [FahemSec](https://fahemsec.com/) platform if you want to solve. Let's digging on :"
+Hey Everyone, this one is my favorite type of web challenge, no RCE, no SQLi, just two layers disagreeing (**Parser Diffrential**) about the same request bytes. Target is **HubManager 2.4.1** at `http://95.217.6.37:30001/`, box `HM-7F3A21C4`. We start as nobody, we end by making `unlockDoor` hand us the flag. This challenge from [FahemSec](https://fahemsec.com/) platform if you want to solve. Let's digging on :"
 
 You only get an IP + port. Box is a smart-home hub simulator:
 
