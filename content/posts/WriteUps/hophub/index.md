@@ -228,6 +228,34 @@ So the file read was never the exploit, it was the map. Every instinct says spra
 We don't need to guess anymore. The server hands us its own source code and its own proxy config. `app.py` tells us what Flask will accept. `nginx.conf` tells us what NGINX will block. The bug is the gap between them.
 
 A public method took a string called `name`, the error message echoed it back, and one `os.path.join` later the whole challenge was open.
+# What Flask Does
+
+From `app.py`, Flask does 5 steps in order:
+
+```python
+1. body.decode('utf-8')  # must be UTF-8, UTF-16/32 die here
+2. json.loads(..., object_pairs_hook=reject_duplicates)  # dup keys -> malformed
+3. check top-level keys are in allowlist for that method
+4. if method not in [login,register,logout,whoami]: require session
+5. dispatch to handler
+```
+
+**unlockDoor handler:**
+
+```python
+device must exist and type == "lock"  # front_door passes
+duration optional, default 60, must be finite float
+return {"ok":true, "lock":"released", "entry_code": FLAG}
+FLAG = _secret("flag", ...) then unlink(/run/hub/flag)
+```
+
+**What does this mean?**
+
+- No role check. scope: "privileged" is just a label, never enforced. Any logged-in user who reaches this function gets the flag.
+- Very strict JSON: no duplicates, only method,device,duration, finite numbers only, UTF-8 only.
+- /run/hub/flag is deleted after boot. Only copy is in memory. You must call `unlockDoor`.
+
+Flask alone is open. Something in front is stopping us.
 
 # What NGINX Does
 
