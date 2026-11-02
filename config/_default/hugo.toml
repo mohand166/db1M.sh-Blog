@@ -63,8 +63,8 @@ enableEmoji = true
 
 # Public routes are independent of the content folders.
 [permalinks.page]
-  posts = "/writeups/:slugorfilename/"
-  challenges = "/my-labs/:slugorfilename/"
+  posts = "/writeups/:slugorcontentbasename/"
+  challenges = "/my-labs/:slugorcontentbasename/"
 
 [permalinks.section]
   posts = "/writeups/"
