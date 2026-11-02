@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/hackena-ramadan-ctf-xss/"]
 title = "Czechoslovakia XSS Challenge | Hackena Ramadan CTF"
 date = "2026-03-14"
 tags = ["CTF", "Web", "XSS", "Medium"]

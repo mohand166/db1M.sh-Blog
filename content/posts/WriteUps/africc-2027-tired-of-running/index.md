@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/africc-2027-tired-of-running/"]
 title = "Tired of Running | AFRICC 2027 Qualifiers CTF"
 date = "2026-08-09"
 tags = ["CTF", "Web", "CRLF", "Smuggling", "SQLi", "Hard"]

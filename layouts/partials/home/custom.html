@@ -39,7 +39,7 @@
       <a class="hero-about-link" href="{{ "about/" | relLangURL }}">More about me <span aria-hidden="true">&rarr;</span></a>
 
       <div class="field-actions">
-        <a class="field-button field-button--primary" href="{{ "posts/" | relLangURL }}">
+        <a class="field-button field-button--primary" href="{{ "writeups/" | relLangURL }}">
           {{ partial "icon.html" "file-lines" }}
           Browse write-ups
         </a>
@@ -52,9 +52,9 @@
         <span>field-console</span>
         <span>01</span>
       </div>
-      <div class="field-terminal__body" data-field-terminal aria-label="Terminal session: whoami returns db1M; focus is Web Pentest, Vulnerability Research, Secure Code Review, and AI Security; live status is exploring the unknown.">
+      <div class="field-terminal__body" data-field-terminal aria-label="Terminal session: whoami returns Mohanad Edrees; focus is Web Pentest, Vulnerability Research, Secure Code Review, and AI Security; live status is exploring the unknown.">
         <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="whoami">whoami</span><span class="field-type-cursor" aria-hidden="true"></span></p>
-        <p class="field-output" data-terminal-line data-terminal-output><span data-terminal-text="db1M">db1M</span><span class="field-type-cursor" aria-hidden="true"></span></p>
+        <p class="field-output" data-terminal-line data-terminal-output><span data-terminal-text="Mohanad Edrees">Mohanad Edrees</span><span class="field-type-cursor" aria-hidden="true"></span></p>
         <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="cat focus.txt">cat focus.txt</span><span class="field-type-cursor" aria-hidden="true"></span></p>
         <p class="field-output" data-terminal-line data-terminal-output><span data-terminal-text="Web Pentest / Vulnerability Research / Secure Code Review / AI Security">Web Pentest / Vulnerability Research / Secure Code Review / AI Security</span><span class="field-type-cursor" aria-hidden="true"></span></p>
         <p data-terminal-line><span class="field-prompt">$</span> <span data-terminal-text="./status --live">./status --live</span><span class="field-type-cursor" aria-hidden="true"></span></p>
@@ -73,7 +73,7 @@
         <p class="field-command">$ ls ./write-ups</p>
         <h2 id="write-ups-title" style="font-size: 1.5rem;">Latest</h2>
       </div>
-      <a href="{{ "posts/" | relLangURL }}">Open archive <span aria-hidden="true">&rarr;</span></a>
+      <a href="{{ "writeups/" | relLangURL }}">Open archive <span aria-hidden="true">&rarr;</span></a>
     </div>
 
     {{ if $uniqueTags }}

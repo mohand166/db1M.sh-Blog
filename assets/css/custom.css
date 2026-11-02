@@ -1729,88 +1729,44 @@ html:not(.dark) .chroma {
 .term-dropdown {
   position: fixed;
   z-index: 1200;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
+  width: min(42rem, calc(100vw - 3rem));
   visibility: hidden;
-  overflow: hidden;
-  max-height: 0;
-  background: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: max-height 0.4s ease, opacity 0.3s ease, visibility 0.3s ease;
+  transform: translateY(-6px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
 }
-
-.term-dropdown.is-open {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
+.term-dropdown.is-open { visibility: visible; opacity: 1; pointer-events: auto; transform: translateY(0); }
 .term-dropdown__panel {
-  width: 100%;
-  max-width: 56rem;
-  margin: 0 auto;
-  padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem) 1.5rem;
-  background: #0d1420;
-  border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-  box-shadow: 0 4rem 3rem rgba(0, 0, 0, 0.45);
+  padding: 1.5rem 1.75rem 1rem;
+  max-height: calc(100dvh - var(--term-top, 6rem) - 1rem);
+  overflow-y: auto;
+  background: #080f14;
+  border: 1px solid #263d3e;
+  border-top: 2px solid #6cce9b;
+  border-radius: 8px;
+  box-shadow: 0 24px 64px #0009;
+  color: #819497;
+  font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
-
-.term-dropdown__input-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 1rem;
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  border-radius: 0.55rem;
-  background: #0a0e14;
-}
-
-.term-dropdown__prompt {
-  color: #5fe38a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 17px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.term-dropdown__input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  color: #e2e8f0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 17px;
-  outline: none;
-}
-
-.term-dropdown__input::placeholder {
-  color: #475569;
-}
-
-.term-dropdown__cursor {
-  color: #22d3ee;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 17px;
-  font-weight: 700;
-  flex-shrink: 0;
-  animation: term-cursor-blink 0.5s steps(1) infinite;
-}
-
-@keyframes term-cursor-blink {
-  50% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .term-dropdown__cursor {
-    animation: none;
-  }
+.term-dropdown__heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.term-dropdown__prompt { color: #77e6a9; flex-shrink: 0; }
+.term-dropdown__path { color: #22d3ee; }
+.term-dropdown__close { color: #819497; background: transparent; border: 0; font-size: 24px; width: 36px; height: 36px; cursor: pointer; }
+.term-dropdown__close:hover { color: #e2e8f0; }
+.term-dropdown__root { margin: 1rem 0 .35rem; color: #a8b9bd; }
+.term-dropdown__input-row { display: flex; align-items: center; gap: .75rem; padding: .65rem .9rem; margin-top: 1.25rem; background: #0d1b20; border: 1px solid #2a4843; border-radius: 5px; }
+.term-dropdown__input-row:focus-within { border-color: #68bc98; }
+.term-dropdown__input { flex: 1; min-width: 0; width: 100%; padding: .25rem 0; border: 0; background: transparent; color: #e2e8f0; font: inherit; outline: none; box-shadow: none; }
+.term-dropdown__input:focus { outline: none; box-shadow: none; }
+.term-dropdown__input::placeholder { color: #748b91; }
+.term-dropdown__hint { display: flex; justify-content: space-between; gap: 1rem; padding-top: .8rem; color: #819497; font-size: 11px; }
+.term-dropdown__close:focus-visible, .term-dropdown__endpoint:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .term-dropdown { width: calc(100vw - 2rem); }
+  .term-dropdown__panel { padding: 1rem; }
+  .term-dropdown__heading { font-size: 12px; gap: .25rem; }
+  .term-dropdown__input { font-size: 16px; }
 }
 
 .term-dropdown__feedback {
@@ -1863,70 +1819,12 @@ html:not(.dark) .chroma {
   font-size: 11px;
 }
 
-.term-dropdown__label {
-  margin: 1.25rem 0 0.6rem;
-  color: #64748b;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.term-dropdown__endpoints {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.term-dropdown__endpoint {
-  display: block;
-  width: 100%;
-  padding: 0.55rem 0;
-  border: 0;
-  border-bottom: 1px solid rgba(100, 116, 139, 0.15);
-  background: transparent;
-  color: #f1f5f9;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-align: left;
-  cursor: pointer;
-  transition: color 150ms ease;
-}
-
-.term-dropdown__endpoint:last-child {
-  border-bottom: 0;
-}
-
-.term-dropdown__endpoint:hover,
-.term-dropdown__endpoint:focus-visible {
-  color: #22d3ee;
-  outline: none;
-}
-
-.term-dropdown__status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  margin-top: 1.25rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid rgba(34, 211, 238, 0.15);
-  color: #64748b;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-}
-
-.term-dropdown__status > span {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: #22d3ee;
-  box-shadow: 0 0 0.6rem rgba(34, 211, 238, 0.7);
-}
+.term-dropdown__endpoints { display: flex; flex-direction: column; margin-left: .25rem; }
+.term-dropdown__endpoint { display: flex; align-items: center; gap: .85rem; min-height: 44px; padding: .4rem .6rem .4rem 0; border: 0; border-radius: 4px; color: #7ad8b1; text-decoration: none; font: inherit; text-align: left; transition: background 120ms ease, color 120ms ease; }
+.term-dropdown__branch { color: #46695d; white-space: pre; }
+.term-dropdown__endpoint:last-child .term-dropdown__branch { font-size: 0; }
+.term-dropdown__endpoint:last-child .term-dropdown__branch::after { content: "└──"; font-size: 14px; }
+.term-dropdown__endpoint:hover { color: #22d3ee; background: #10252b; }
 
 @media (prefers-reduced-motion: reduce) {
   .term-dropdown {
@@ -1936,7 +1834,7 @@ html:not(.dark) .chroma {
 
 /* ── Autocomplete dropdown ── */
 .term-autocomplete {
-  position: absolute;
+  position: relative;
   z-index: 10;
   left: 0;
   right: 0;

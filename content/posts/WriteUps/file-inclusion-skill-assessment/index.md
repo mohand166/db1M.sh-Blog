@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/file-inclusion-skill-assessment/"]
 title = 'File Inclusion Skill Assessment | CWES Path on HTB'
 date = '2026-06-15T08:36:42-04:00'
 draft = false

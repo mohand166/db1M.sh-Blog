@@ -1,4 +1,5 @@
 +++
+aliases = ["/challenges/we-need-to-talk/"]
 title = 'We Need To Talk Web Challenge | CAT CTF 26 Quals'
 date = '2026-09-12T00:00:00-04:00'
 draft = false

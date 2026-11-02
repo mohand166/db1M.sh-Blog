@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/hophub/"]
 title = "HopHub Web Challenge | FahemSec"
 date = "2026-10-01"
 tags = ["CTF", "Web", "Chunked-Encoding", "Medium"]

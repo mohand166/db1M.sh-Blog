@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/canon-collapse/"]
 title = "Canon Collapse | IEEE VICTORIS CTF 2026 Qualifications"
 date = "2026-09-18"
 tags = ["CTF", "Web", "WAF-Bypass", "JSON-Parser-Differential", "Unicode-Normalization", "Medium"]

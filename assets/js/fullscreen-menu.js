@@ -4,14 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = menu?.querySelector("[data-term-input]");
   const feedback = menu?.querySelector("[data-term-feedback]");
   const endpointButtons = [...(menu?.querySelectorAll("[data-term-endpoint]") || [])];
-  const utcStatus = menu?.querySelector("[data-utc-status]");
+  const closeButton = menu?.querySelector("[data-term-close]");
   const acBox = menu?.querySelector("[data-term-autocomplete]");
   if (!menu || !openButtons.length || !input) return;
 
   const endpoints = endpointButtons.map((btn, i) => {
     const route = btn.getAttribute("data-term-endpoint") || "/";
     return {
-      label: btn.textContent.trim(),
+      label: btn.dataset.termLabel,
+      directory: btn.dataset.termDirectory,
       route: route.startsWith("/") ? route : `/${route}`,
       element: btn,
       index: i,
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fetchPageIndex = async () => {
     if (pageIndex) return pageIndex;
     try {
-      const res = await fetch((window.location.pathname.includes("/posts/") ? "../../" : "../") + "index.json");
+      const res = await fetch(menu.dataset.indexUrl);
       if (!res.ok) return [];
       const data = await res.json();
       pageIndex = data.map((item) => ({
@@ -201,10 +202,10 @@ document.addEventListener("DOMContentLoaded", () => {
       endpoints.forEach((ep) => {
         const labelLower = ep.label.toLowerCase();
         const routeClean = ep.route.replace(/^\/|\/$/g, "").toLowerCase();
-        if (labelLower.includes(lower) || routeClean.includes(lower)) {
+        if (labelLower.includes(lower.replace(/^cd\s+/, "")) || ep.directory.startsWith(lower.replace(/^cd\s+/, "")) || routeClean.includes(lower)) {
           suggestions.push({
-            display: `cd ${ep.label}`,
-            command: `cd ${ep.label}`,
+            display: `cd ${ep.directory}/`,
+            command: `cd ${ep.directory}/`,
             hint: ep.route,
           });
         }
@@ -254,17 +255,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const trimmed = raw.trim();
     if (!trimmed) return null;
 
-    if (trimmed === "?") return { type: "help" };
+    if (["?", "help", "ls", "tree", "tree -L 1"].includes(trimmed)) return { type: "help" };
+    if (trimmed === "cd" || trimmed === "cd ~" || trimmed === "cd /") return { type: "navigate", route: "/" };
     if (trimmed === "/") return { type: "search" };
 
     const cdMatch = trimmed.match(/^cd\s+(.*)/i);
     if (cdMatch) {
-      const arg = cdMatch[1].trim().toLowerCase();
+      const arg = cdMatch[1].trim().toLowerCase().replace(/\/$/, "");
       if (arg === "") return { type: "navigate", route: "/" };
       const match = endpoints.find((ep) => {
         const routeClean = ep.route.replace(/^\/|\/$/g, "").toLowerCase();
         const labelClean = ep.label.toLowerCase();
-        return routeClean === arg || labelClean === arg;
+        return routeClean === arg || labelClean === arg || ep.directory === arg;
       });
       if (match) return { type: "navigate", route: match.route };
       return { type: "error", text: `unknown section: ${cdMatch[1].trim()}` };
@@ -358,27 +360,32 @@ document.addEventListener("DOMContentLoaded", () => {
   let isOpen = false;
 
   const positionBelowHeader = () => {
-    const header = document.querySelector(".fixed.inset-x-0");
-    if (header) {
-      const rect = header.getBoundingClientRect();
-      menu.style.top = `${rect.bottom}px`;
-    }
+    const trigger = returnFocus || openButtons.find((button) => button.getBoundingClientRect().width);
+    if (!trigger) return;
+    const rect = trigger.getBoundingClientRect();
+    const top = rect.bottom + 18;
+    const inset = window.innerWidth <= 640 ? 16 : 24;
+    menu.style.top = `${top}px`;
+    menu.style.setProperty("--term-top", `${top}px`);
+    menu.style.left = `${Math.max(inset, Math.min(rect.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - inset))}px`;
+
   };
 
   const openDropdown = (trigger) => {
     returnFocus = trigger;
     positionBelowHeader();
     isOpen = true;
-    document.body.style.overflow = "hidden";
+    menu.inert = false;
     menu.classList.add("is-open");
     menu.setAttribute("aria-hidden", "false");
     openButtons.forEach((b) => b.setAttribute("aria-expanded", "true"));
-    window.setTimeout(() => input.focus(), 100);
+    if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+    else closeButton?.focus({ preventScroll: true });
   };
 
   const closeDropdown = (restoreFocus = true) => {
     isOpen = false;
-    document.body.style.overflow = "";
+    menu.inert = true;
     menu.classList.remove("is-open");
     menu.setAttribute("aria-hidden", "true");
     openButtons.forEach((b) => b.setAttribute("aria-expanded", "false"));
@@ -416,15 +423,15 @@ document.addEventListener("DOMContentLoaded", () => {
         highlightAutocomplete();
         return;
       }
-      if (e.key === "Tab" && acIndex >= 0) {
-        e.preventDefault();
-        const item = acItems[acIndex];
-        if (item) {
+      if (e.key === "Tab" && !e.shiftKey && input.value.trim()) {
+        const item = acItems[acIndex >= 0 ? acIndex : 0];
+        if (item && item.command.startsWith("cd ")) {
+          e.preventDefault();
+          e.stopPropagation();
           input.value = item.command;
           hideAutocomplete();
-          executeCommand(item.command);
+          return;
         }
-        return;
       }
     }
 
@@ -453,6 +460,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   endpointButtons.forEach((btn, i) =>
     btn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       const ep = endpoints[i];
       if (!ep) return;
@@ -461,18 +469,9 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   );
 
+  closeButton?.addEventListener("click", () => closeDropdown());
   menu.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab") return;
-    const focusable = [input, ...endpointButtons];
-    const first = focusable[0];
-    const last = focusable.at(-1);
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
+    if (e.key === "Escape" && e.target !== input) closeDropdown();
   });
 
   document.addEventListener("click", (e) => {
@@ -486,19 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOpen) positionBelowHeader();
   });
 
-  /* ── utc clock ── */
-  const updateUtc = () => {
-    if (!utcStatus) return;
-    const time = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "UTC",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(new Date());
-    utcStatus.textContent = `${time} UTC // SYSTEM ONLINE`;
-  };
-
-  updateUtc();
-  window.setInterval(updateUtc, 1000);
+  window.addEventListener("scroll", () => {
+    if (isOpen) positionBelowHeader();
+  }, { passive: true });
 });

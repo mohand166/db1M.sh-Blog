@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/bcactf-2025/"]
 title = "BCACTF 2025 Write-Up"
 date = "2025-06-24"
 tags = ["CTF", "Web"]

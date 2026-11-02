@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/", "/posts/writeups/"]
 title = "Write-ups"
 description = "CTF solutions, security research, and technical notes—with the reasoning left in."
 excludeFromSearch = true

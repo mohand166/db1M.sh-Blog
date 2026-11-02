@@ -60,3 +60,12 @@ enableEmoji = true
       name = 'fragmentrefs'
       type = 'fragments'
       weight = 10
+
+# Public routes are independent of the content folders.
+[permalinks.page]
+  posts = "/writeups/:slugorfilename/"
+  challenges = "/my-labs/:slugorfilename/"
+
+[permalinks.section]
+  posts = "/writeups/"
+  challenges = "/my-labs/"

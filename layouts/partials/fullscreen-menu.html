@@ -1,38 +1,25 @@
 {{ $endpoints := hugo.Data.fullscreen_menu.items }}
-<div id="fullscreen-navigation" class="term-dropdown" role="dialog" aria-modal="false" aria-label="Terminal navigation" aria-hidden="true">
+<div id="fullscreen-navigation" class="term-dropdown" role="dialog" aria-modal="false" aria-label="Terminal navigation" aria-hidden="true" data-index-url="{{ "index.json" | relLangURL }}" inert>
   <div class="term-dropdown__panel">
-    <div class="term-dropdown__input-row" style="position:relative;">
-      <span class="term-dropdown__prompt" aria-hidden="true">$</span>
-      <input
-        type="text"
-        class="term-dropdown__input"
-        data-term-input
-        placeholder="type a command... (cd, /, ?)"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="Enter navigation command"
-        aria-autocomplete="list"
-        aria-controls="term-autocomplete"
-      >
-      <span class="term-dropdown__cursor" aria-hidden="true">_</span>
-      <div id="term-autocomplete" class="term-autocomplete" data-term-autocomplete hidden></div>
+    <div class="term-dropdown__heading">
+      <span><span class="term-dropdown__prompt">db1M@blog</span>:<span class="term-dropdown__path">~</span>$ tree -L 1</span>
+      <button type="button" class="term-dropdown__close" data-term-close aria-label="Close navigation">&times;</button>
     </div>
-    <div class="term-dropdown__feedback" data-term-feedback aria-live="polite"></div>
-
-    <p class="term-dropdown__label">AVAILABLE ENDPOINTS</p>
+    <div class="term-dropdown__root">~/db1M.sh</div>
     <nav class="term-dropdown__endpoints" aria-label="Site navigation">
       {{ range $endpoints }}
         {{ if ne (default "" .action) "search" }}
-          <button type="button" class="term-dropdown__endpoint" data-term-endpoint="{{ .url | urlize }}">
-            {{ .label }}
-          </button>
+          {{ $directory := .label | urlize }}
+          <a class="term-dropdown__endpoint" href="{{ .url | relLangURL }}" data-term-endpoint="{{ .url | relLangURL }}" data-term-directory="{{ $directory }}" data-term-label="{{ .label }}"><span class="term-dropdown__branch" aria-hidden="true">├──</span><span>{{ $directory }}/</span></a>
         {{ end }}
       {{ end }}
     </nav>
-
-    <div class="term-dropdown__status">
-      <span aria-hidden="true"></span>
-      <time data-utc-status>UTC // SYSTEM ONLINE</time>
+    <div class="term-dropdown__input-row">
+      <span class="term-dropdown__prompt" aria-hidden="true">$</span>
+      <input type="text" class="term-dropdown__input" data-term-input placeholder="cd dir" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Enter navigation command" aria-autocomplete="list" aria-controls="term-autocomplete">
     </div>
+    <div id="term-autocomplete" class="term-autocomplete" data-term-autocomplete hidden></div>
+    <div class="term-dropdown__feedback" data-term-feedback aria-live="polite"></div>
+    <div class="term-dropdown__hint"><span>Tab complete · Enter open</span><span>help</span></div>
   </div>
 </div>

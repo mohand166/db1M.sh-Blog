@@ -1,4 +1,5 @@
 +++
+aliases = ["/challenges/prison-break/"]
 title = "Prison Break AI Security Challenge | CAT CTF 26 Finals"
 date = "2026-09-29"
 tags = ["CTF", "Web", "AI Security", "Cache-Deception", "LLM", "Hard"]

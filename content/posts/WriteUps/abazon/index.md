@@ -5,7 +5,7 @@ tags = ["CTF", "Web", "Session-Puzzling", "Auth-Bypass"]
 description = "Blackbox challenge from FahemSec platform, using Session Variable Overwrite via Forgot Password (Session Puzzle) to access admin.php and get the flag."
 draft = false
 slug = "abazon"
-aliases = ["/posts/writeups/session-puzzling-fahemsec/"]
+aliases = ["/posts/writeups/session-puzzling-fahemsec/", "/posts/writeups/abazon/"]
 +++
 
 Hey folks, did your about **Session Puzzling Vulnerability** before?? 

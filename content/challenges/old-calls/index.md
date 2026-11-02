@@ -1,4 +1,5 @@
 +++
+aliases = ["/challenges/old-calls/"]
 title = "Old Calls Misc Challenge | CAT CTF 26 Quals"
 date = "2026-09-12"
 tags = ["CTF", "Misc", "Git-Forensics", "FTP", "Easy"]

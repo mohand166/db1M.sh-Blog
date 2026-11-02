@@ -1,6 +1,6 @@
 [[items]]
   label = "Write-ups"
-  url = "/posts/"
+  url = "/writeups/"
 
 [[items]]
   label = "My Labs"

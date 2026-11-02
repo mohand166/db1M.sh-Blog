@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/graphql-skill-assessment/"]
 title = 'Attacking GraphQL Skill Assessment | CWES on HTB'
 date = '2026-06-21T03:16:15-04:00'
 draft = false

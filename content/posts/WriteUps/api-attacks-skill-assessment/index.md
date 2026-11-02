@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/api-attacks-skill-assessment/"]
 title = 'API Attack Skill Assessment | CWES Path on HTB'
 date = '2026-07-05T08:36:42-04:00'
 draft = false

@@ -1,4 +1,5 @@
 +++
+aliases = ["/challenges/cat-ctf-26/"]
 title = "Write Ups For Challenges I Created In CAT CTF 26 Entry Level"
 date = "2026-03-23"
 tags = ["CTF", "Web", "Easy"]

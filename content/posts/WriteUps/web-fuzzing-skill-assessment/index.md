@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/web-fuzzing-skill-assessment/"]
 title = 'Web Fuzzing Skill Assessment | CWES Path on HTB'
 date = '2026-01-07T08:36:42-04:00'
 draft = false

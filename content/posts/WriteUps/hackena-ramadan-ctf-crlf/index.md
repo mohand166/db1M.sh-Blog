@@ -1,4 +1,5 @@
 +++
+aliases = ["/posts/writeups/hackena-ramadan-ctf-crlf/"]
 title = "No Notes CRLF Challenge | Hackena Ramadan CTF"
 date = "2026-03-14"
 tags = ["CTF", "Web", "Hard"]

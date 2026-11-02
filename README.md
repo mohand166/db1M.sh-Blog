@@ -59,3 +59,10 @@ Do not commit `public/`; it is generated and deployed by GitHub Actions.
 Blowfish supports per-article overrides such as `showTableOfContents`, `showHero`, `heroStyle`, and `showZenMode` in front matter when a write-up needs a different presentation.
 
 When a GitHub remote exists, replace the placeholder `baseURL` in `config/_default/hugo.toml` with the live URL. The deployment workflow already overrides it during production builds.
+
+## Public URLs
+
+Write-ups use `/writeups/<slug>/` and labs use `/my-labs/<slug>/`.
+These routes are configured in `config/_default/hugo.toml`; content folders stay unchanged.
+The Write-ups archive is `/writeups/`. Existing article URLs have Hugo aliases
+that redirect to the new addresses. New content automatically uses the new routes.
