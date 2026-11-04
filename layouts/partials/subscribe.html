@@ -1,0 +1,35 @@
+{{ $scope := "all" }}
+{{ if eq .Section "posts" }}{{ $scope = "writeups" }}{{ end }}
+{{ if eq .Section "challenges" }}{{ $scope = "labs" }}{{ end }}
+{{ $settings := site.Params.subscriptions | default dict }}
+{{ $actions := dict "all" ($settings.allAction | default "") "writeups" ($settings.writeupsAction | default "") "labs" ($settings.labsAction | default "") }}
+{{ $action := index $actions $scope }}
+<section class="blog-subscribe" aria-labelledby="subscribe-title" data-subscribe>
+  <div class="blog-subscribe__intro">
+    <h2 id="subscribe-title">Get new posts by email.</h2>
+    <p>Choose what you’d like to follow.</p>
+  </div>
+  <form method="post"{{ with $action }} action="{{ . }}"{{ end }} data-subscribe-form>
+    <fieldset>
+      <legend class="blog-subscribe__sr-only">What would you like to follow?</legend>
+      <div class="blog-subscribe__choices">
+        {{ range slice (dict "value" "all" "label" "Everything") (dict "value" "writeups" "label" "Write-ups") (dict "value" "labs" "label" "My Labs") }}
+          <label class="blog-subscribe__choice">
+            <input type="radio" name="subscription-scope" value="{{ .value }}" data-action="{{ index $actions .value }}"{{ if eq .value $scope }} checked{{ end }}>
+            <span>{{ .label }}</span>
+          </label>
+        {{ end }}
+      </div>
+    </fieldset>
+    <label for="subscribe-email" class="blog-subscribe__sr-only">Email address</label>
+    <div class="blog-subscribe__row">
+      <input type="email" id="subscribe-email" name="email" placeholder="you@example.com" autocomplete="email" required maxlength="254" aria-describedby="subscribe-hint">
+      <button type="submit"{{ if not $action }} disabled{{ end }}>Subscribe</button>
+    </div>
+    <p id="subscribe-hint" class="blog-subscribe__hint" role="status">{{ if $action }}Unsubscribe anytime.{{ else }}Email subscriptions are coming soon.{{ end }}</p>
+  </form>
+</section>
+{{ with resources.Get "js/subscribe.js" }}
+  {{ $js := . | resources.Minify | resources.Fingerprint "sha512" }}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{ end }}

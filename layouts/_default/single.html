@@ -91,6 +91,10 @@
       </div>
     </section>
 
+    {{ if in (slice "posts" "challenges") .Section }}
+      {{ partial "subscribe.html" . }}
+    {{ end }}
+
     <footer class="pt-8 max-w-fit print:hidden">
       {{ partial "article-pagination.html" . }}
       {{ if .Params.showComments | default (site.Params.article.showComments | default false) }}

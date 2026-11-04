@@ -139,6 +139,8 @@
     {{ end }}
   </section>
 
+  {{ partial "subscribe.html" . }}
+
   {{ with resources.Get "js/terminal.js" }}
     {{ $terminalJS := . | resources.Minify | resources.Fingerprint "sha512" }}
     <script defer src="{{ $terminalJS.RelPermalink }}" integrity="{{ $terminalJS.Data.Integrity }}"></script>

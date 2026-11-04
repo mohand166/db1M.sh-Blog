@@ -66,3 +66,25 @@ Write-ups use `/writeups/<slug>/` and labs use `/my-labs/<slug>/`.
 These routes are configured in `config/_default/hugo.toml`; content folders stay unchanged.
 The Write-ups archive is `/writeups/`. Existing article URLs have Hugo aliases
 that redirect to the new addresses. New content automatically uses the new routes.
+
+## Email subscriptions
+
+The homepage and write-up/lab articles share an email signup form. Articles
+preselect their content type; the homepage defaults to Everything.
+
+Set up three feeds in follow.it using the production RSS URLs:
+
+- Everything: `https://db1m.me/index.xml`
+- Write-ups: `https://db1m.me/writeups/index.xml`
+- My Labs: `https://db1m.me/my-labs/index.xml`
+
+Copy the **action URL** from each follow.it subscription form into
+`[subscriptions]` in `config/_default/params.toml`: `allAction`,
+`writeupsAction`, and `labsAction`. These are public form URLs, not API keys.
+The form posts the email to the selected feed's URL; follow.it handles the
+confirmation and delivery. Until a URL is configured, that choice shows
+“Email subscriptions are coming soon” and cannot submit.
+
+Build and deploy the RSS changes before asking follow.it to import the feeds.
+If follow.it requests ownership verification, add its supplied verification
+file under `static/` at the requested path and deploy it.
