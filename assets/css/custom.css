@@ -2401,3 +2401,17 @@ html.boot-sequence-skip .boot-sequence,
   .blog-subscribe__row button { padding: 0.75rem; }
 }
 @media print { .blog-subscribe { display: none; } }
+
+/* Space Grotesk for write-up titles and descriptions. */
+.home-post-card h3,
+.writeup-row h2,
+.writeup-header h1,
+#single_header > h1 {
+  font-family: "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.home-post-card__body > p,
+.writeup-row > p,
+.single-writeup-description {
+  font-family: "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+}
