@@ -2283,31 +2283,38 @@ html.boot-sequence-skip .boot-sequence,
 }
 
 /* Email subscriptions: shared by the homepage and article pages. */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2");
+}
 .blog-subscribe {
   display: grid;
   grid-template-columns: 1fr 1.15fr;
   align-items: center;
   gap: 3.25rem;
   margin: 3rem 0 1rem;
-  padding: 2rem;
-  border: 1px solid rgba(var(--color-neutral-400), 0.28);
-  border-radius: 0.5rem;
-  background: rgba(var(--color-neutral-100), 0.7);
+  padding: 2rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: rgb(var(--color-neutral-800));
   font-size: 0.875rem;
   line-height: 1.6;
 }
 .dark .blog-subscribe {
-  background: rgba(11, 18, 26, 0.94);
+  background: transparent;
   color: #e2e8f0;
-  border-color: #23313e;
 }
 .blog-subscribe__intro h2 {
-  margin: 0 0 0.625rem;
-  font-size: 1.6875rem;
+  margin: 0 0 0.75rem;
+  font-family: "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 2.75rem;
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.03em;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
 }
 .blog-subscribe__intro p {
   margin: 0;
@@ -2343,7 +2350,7 @@ html.boot-sequence-skip .boot-sequence,
   white-space: nowrap;
   cursor: pointer;
 }
-.dark .blog-subscribe__choice span { color: #94a3b8; border-color: #23313e; }
+.dark .blog-subscribe__choice span { color: #94a3b8; border-color: #1b2733; }
 .blog-subscribe__choice input:checked + span {
   color: rgb(var(--color-primary-700));
   border-color: rgba(var(--color-primary-600), 0.55);
@@ -2361,7 +2368,7 @@ html.boot-sequence-skip .boot-sequence,
   color: inherit;
   font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
-.dark .blog-subscribe__row input { background: #080c12; border-color: #304251; }
+.dark .blog-subscribe__row input { background: #05080d; border-color: #253442; }
 .blog-subscribe__row input::placeholder { color: #8798a9; }
 .blog-subscribe__row button {
   padding: 0.6875rem 1.0625rem;
@@ -2379,11 +2386,11 @@ html.boot-sequence-skip .boot-sequence,
 .blog-subscribe__row button:focus-visible { outline: 2px solid #22d3ee; outline-offset: 4px; }
 .blog-subscribe__hint { margin: 0.625rem 0 0; font-size: 0.6875rem; color: rgb(var(--color-neutral-500)); }
 @media (max-width: 760px) {
-  .blog-subscribe { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.625rem; }
-  .blog-subscribe__intro h2 { font-size: 1.5625rem; }
+  .blog-subscribe { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.625rem 0; }
+  .blog-subscribe__intro h2 { font-size: 2.125rem; }
 }
 @media (max-width: 520px) {
-  .blog-subscribe { padding: 1.375rem; }
+  .blog-subscribe { padding: 1.375rem 0; }
   .blog-subscribe__choice span { padding: 0.5625rem 0.375rem; font-size: 0.625rem; }
   .blog-subscribe__row { flex-direction: column; }
   .blog-subscribe__row button { padding: 0.75rem; }
