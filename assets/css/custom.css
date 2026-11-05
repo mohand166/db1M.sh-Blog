@@ -2296,17 +2296,22 @@ html.boot-sequence-skip .boot-sequence,
   align-items: center;
   gap: 3.25rem;
   margin: 3rem 0 1rem;
-  padding: 2rem 0;
-  border: 0;
-  border-radius: 0;
+  padding: 2rem;
+  border: 1px solid rgba(var(--color-neutral-500), 0.22);
+  border-radius: 0.85rem;
   background: transparent;
   color: rgb(var(--color-neutral-800));
+  font-family: "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.6;
+  transition: border-color 180ms ease;
 }
 .dark .blog-subscribe {
   background: transparent;
   color: #e2e8f0;
+}
+.blog-subscribe:focus-within {
+  border-color: rgba(var(--color-primary-500), 0.5);
 }
 .blog-subscribe__intro h2 {
   margin: 0 0 0.75rem;
@@ -2345,7 +2350,7 @@ html.boot-sequence-skip .boot-sequence,
   border: 1px solid rgba(var(--color-neutral-400), 0.3);
   border-radius: 0.3125rem;
   color: rgb(var(--color-neutral-500));
-  font: 0.6875rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 0.75rem/1.5 "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
@@ -2366,7 +2371,7 @@ html.boot-sequence-skip .boot-sequence,
   border-radius: 0.3125rem;
   background: rgb(var(--color-neutral-50));
   color: inherit;
-  font: 0.75rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 0.8125rem/1.5 "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .dark .blog-subscribe__row input { background: #05080d; border-color: #253442; }
 .blog-subscribe__row input::placeholder { color: #8798a9; }
@@ -2376,7 +2381,7 @@ html.boot-sequence-skip .boot-sequence,
   border-radius: 0.3125rem;
   background: #22d3ee;
   color: #05232c;
-  font: 600 0.75rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 600 0.8125rem/1.5 "Space Grotesk", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   cursor: pointer;
 }
 .blog-subscribe__row button:hover:enabled { background: #67e8f9; }
@@ -2386,12 +2391,12 @@ html.boot-sequence-skip .boot-sequence,
 .blog-subscribe__row button:focus-visible { outline: 2px solid #22d3ee; outline-offset: 4px; }
 .blog-subscribe__hint { margin: 0.625rem 0 0; font-size: 0.6875rem; color: rgb(var(--color-neutral-500)); }
 @media (max-width: 760px) {
-  .blog-subscribe { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.625rem 0; }
+  .blog-subscribe { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.625rem; }
   .blog-subscribe__intro h2 { font-size: 2.125rem; }
 }
 @media (max-width: 520px) {
-  .blog-subscribe { padding: 1.375rem 0; }
-  .blog-subscribe__choice span { padding: 0.5625rem 0.375rem; font-size: 0.625rem; }
+  .blog-subscribe { padding: 1.375rem; }
+  .blog-subscribe__choice span { padding: 0.5625rem 0.375rem; font-size: 0.6875rem; }
   .blog-subscribe__row { flex-direction: column; }
   .blog-subscribe__row button { padding: 0.75rem; }
 }
